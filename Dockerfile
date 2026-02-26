@@ -1,5 +1,5 @@
 # Build stage
-FROM mcr.microsoft.com/dotnet/sdk:10.0-preview AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # Copy project file and restore
@@ -10,8 +10,8 @@ RUN dotnet restore src/WhatsAppCrm.Web/WhatsAppCrm.Web.csproj
 COPY . .
 RUN dotnet publish src/WhatsAppCrm.Web/WhatsAppCrm.Web.csproj -c Release -o /app/publish
 
-# Runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-preview AS runtime
+# Runtime stage — alpine for minimal footprint
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS runtime
 WORKDIR /app
 
 COPY --from=build /app/publish .
@@ -19,6 +19,7 @@ COPY --from=build /app/publish .
 # Render uses PORT env var
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV PORT=8080
+ENV DOTNET_GCHeapHardLimit=0x10000000
 EXPOSE 8080
 
 ENTRYPOINT ["dotnet", "WhatsAppCrm.Web.dll"]

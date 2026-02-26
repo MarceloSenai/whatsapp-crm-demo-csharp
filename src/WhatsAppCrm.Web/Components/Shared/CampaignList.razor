@@ -1,0 +1,171 @@
+@inject HttpClient Http
+@implements IDisposable
+
+@if (campaigns == null)
+{
+    <div class="flex items-center justify-center h-32">
+        <div class="animate-spin w-6 h-6 border-2 border-whatsapp border-t-transparent rounded-full"></div>
+    </div>
+}
+else if (campaigns.Count == 0)
+{
+    <div class="text-center py-12">
+        <div class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><path d="m3 11 18-5v12L3 13v-2z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
+        </div>
+        <p class="text-gray-500 text-sm mb-1">Nenhuma campanha criada</p>
+        <p class="text-gray-400 text-xs">Crie sua primeira campanha para comecar</p>
+    </div>
+}
+else
+{
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-gray-200 bg-gray-50">
+                        <th class="text-left text-xs font-medium text-gray-500 px-4 py-3">Nome</th>
+                        <th class="text-left text-xs font-medium text-gray-500 px-4 py-3">Status</th>
+                        <th class="text-left text-xs font-medium text-gray-500 px-4 py-3">Audiencia</th>
+                        <th class="text-left text-xs font-medium text-gray-500 px-4 py-3">Progresso</th>
+                        <th class="text-center text-xs font-medium text-gray-500 px-4 py-3">Enviadas</th>
+                        <th class="text-center text-xs font-medium text-gray-500 px-4 py-3">Entregues</th>
+                        <th class="text-center text-xs font-medium text-gray-500 px-4 py-3">Lidas</th>
+                        <th class="text-center text-xs font-medium text-gray-500 px-4 py-3">Respostas</th>
+                        <th class="text-center text-xs font-medium text-gray-500 px-4 py-3">Acoes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in campaigns)
+                    {
+                        var processed = (c.Stats?.Sent ?? 0) + (c.Stats?.Delivered ?? 0) + (c.Stats?.Read ?? 0) + (c.Stats?.Replied ?? 0);
+                        var total = c.Stats?.Total ?? 0;
+                        var pct = total > 0 ? (int)((double)processed / total * 100) : 0;
+
+                        <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                            <td class="px-4 py-3">
+                                <div class="font-medium text-sm text-gray-900">@c.Name</div>
+                                <div class="text-[11px] text-gray-400 truncate max-w-[200px]">@c.TemplateText</div>
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="@($"text-[11px] px-2 py-0.5 rounded-full font-medium {StatusClass(c.Status)}")">
+                                    @StatusLabel(c.Status)
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-600">@total contatos</td>
+                            <td class="px-4 py-3">
+                                <div class="w-24 bg-gray-200 rounded-full h-1.5">
+                                    <div class="bg-whatsapp h-1.5 rounded-full transition-all" style="width: @(pct)%"></div>
+                                </div>
+                                <span class="text-[10px] text-gray-400">@(pct)%</span>
+                            </td>
+                            <td class="px-4 py-3 text-center text-sm text-gray-600">@(c.Stats?.Sent ?? 0)</td>
+                            <td class="px-4 py-3 text-center text-sm text-gray-600">@(c.Stats?.Delivered ?? 0)</td>
+                            <td class="px-4 py-3 text-center text-sm text-gray-600">@(c.Stats?.Read ?? 0)</td>
+                            <td class="px-4 py-3 text-center text-sm text-gray-600">@(c.Stats?.Replied ?? 0)</td>
+                            <td class="px-4 py-3 text-center">
+                                @if (c.Status == "draft")
+                                {
+                                    <button @onclick="() => StartCampaign(c.Id)"
+                                            disabled="@_starting"
+                                            class="text-xs px-3 py-1 bg-whatsapp text-white rounded-lg hover:bg-whatsapp-dark transition-colors disabled:opacity-50">
+                                        Iniciar
+                                    </button>
+                                }
+                                else if (c.Status == "running")
+                                {
+                                    <span class="text-xs text-blue-500">
+                                        <svg class="inline animate-spin h-3 w-3 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                        </svg>
+                                        Processando
+                                    </span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@code {
+    private List<CampaignDto>? campaigns;
+    private Timer? pollTimer;
+    private bool _starting;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCampaigns();
+        pollTimer = new Timer(async _ =>
+        {
+            await LoadCampaigns();
+            await InvokeAsync(StateHasChanged);
+        }, null, 5000, 5000);
+    }
+
+    private async Task LoadCampaigns()
+    {
+        try { campaigns = await Http.GetFromJsonAsync<List<CampaignDto>>("/api/campaigns"); }
+        catch { /* ignore polling errors */ }
+    }
+
+    private async Task StartCampaign(string id)
+    {
+        _starting = true;
+        try
+        {
+            await Http.PostAsync($"/api/campaigns/{id}/start", null);
+            await LoadCampaigns();
+        }
+        catch { /* ignore */ }
+        finally
+        {
+            _starting = false;
+        }
+    }
+
+    private string StatusClass(string s) => s switch
+    {
+        "draft" => "bg-gray-100 text-gray-600",
+        "running" => "bg-blue-100 text-blue-700 animate-pulse",
+        "completed" => "bg-green-100 text-green-700",
+        "paused" => "bg-amber-100 text-amber-700",
+        _ => "bg-gray-100 text-gray-600"
+    };
+
+    private string StatusLabel(string s) => s switch
+    {
+        "draft" => "Rascunho",
+        "running" => "Em execucao",
+        "completed" => "Concluida",
+        "paused" => "Pausada",
+        _ => s
+    };
+
+    public void Dispose() => pollTimer?.Dispose();
+
+    public class CampaignDto
+    {
+        public string Id { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string TemplateText { get; set; } = "";
+        public string Status { get; set; } = "";
+        public string? AudienceFilter { get; set; }
+        public int RateLimit { get; set; }
+        public CampaignStats? Stats { get; set; }
+    }
+
+    public class CampaignStats
+    {
+        public int Total { get; set; }
+        public int Pending { get; set; }
+        public int Sent { get; set; }
+        public int Delivered { get; set; }
+        public int Read { get; set; }
+        public int Replied { get; set; }
+        public int Failed { get; set; }
+    }
+}

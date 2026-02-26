@@ -1,0 +1,85 @@
+@inject HttpClient Http
+
+@if (loading)
+{
+    <div class="flex items-center justify-center h-64">
+        <div class="animate-spin w-8 h-8 border-2 border-whatsapp border-t-transparent rounded-full"></div>
+    </div>
+}
+else if (pipeline != null)
+{
+    <div class="flex gap-4 overflow-x-auto p-4 h-full">
+        @foreach (var stage in pipeline.Stages ?? [])
+        {
+            <KanbanColumn Stage="stage" AllStages="pipeline.Stages" OnMoveDeal="MoveDeal" />
+        }
+    </div>
+}
+else
+{
+    <div class="flex items-center justify-center h-64 text-gray-400">
+        Nenhum pipeline configurado
+    </div>
+}
+
+@code {
+    private PipelineDto? pipeline;
+    private bool loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPipeline();
+    }
+
+    private async Task LoadPipeline()
+    {
+        loading = true;
+        try
+        {
+            pipeline = await Http.GetFromJsonAsync<PipelineDto>("/api/pipeline");
+        }
+        catch { /* ignore */ }
+        loading = false;
+    }
+
+    private async Task MoveDeal((string dealId, string stageId) move)
+    {
+        try
+        {
+            await Http.PatchAsJsonAsync("/api/pipeline", new { dealId = move.dealId, stageId = move.stageId });
+            await LoadPipeline();
+        }
+        catch { /* ignore */ }
+    }
+
+    public class PipelineDto
+    {
+        public string Id { get; set; } = "";
+        public string Name { get; set; } = "";
+        public List<StageDto>? Stages { get; set; }
+    }
+
+    public class StageDto
+    {
+        public string Id { get; set; } = "";
+        public string Name { get; set; } = "";
+        public int Order { get; set; }
+        public string Color { get; set; } = "";
+        public List<DealDto>? Deals { get; set; }
+    }
+
+    public class DealDto
+    {
+        public string Id { get; set; } = "";
+        public string Title { get; set; } = "";
+        public double Value { get; set; }
+        public string ContactId { get; set; } = "";
+        public DealContact? Contact { get; set; }
+    }
+
+    public class DealContact
+    {
+        public string Name { get; set; } = "";
+        public string Tags { get; set; } = "[]";
+    }
+}

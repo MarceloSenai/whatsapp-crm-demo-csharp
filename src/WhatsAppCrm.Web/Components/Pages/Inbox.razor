@@ -1,0 +1,37 @@
+@page "/inbox"
+
+<div class="flex h-full">
+    @* Conversation List *@
+    <div class="w-80 border-r border-gray-200 bg-white flex-shrink-0">
+        <ConversationList SelectedId="@_selectedConversationId" OnSelect="HandleSelectConversation" />
+    </div>
+
+    @* Chat Panel *@
+    <div class="flex-1 flex flex-col min-w-0">
+        <ChatPanel ConversationId="@_selectedConversationId"
+                   OnToggleContactInfo="ToggleContactInfo" />
+    </div>
+
+    @* Contact Info *@
+    @if (_showContactInfo && !string.IsNullOrEmpty(_selectedConversationId))
+    {
+        <div class="w-80 border-l border-gray-200 bg-white flex-shrink-0">
+            <ContactInfo ConversationId="@_selectedConversationId" OnClose="ToggleContactInfo" />
+        </div>
+    }
+</div>
+
+@code {
+    private string? _selectedConversationId;
+    private bool _showContactInfo;
+
+    private void HandleSelectConversation(string conversationId)
+    {
+        _selectedConversationId = conversationId;
+    }
+
+    private void ToggleContactInfo()
+    {
+        _showContactInfo = !_showContactInfo;
+    }
+}

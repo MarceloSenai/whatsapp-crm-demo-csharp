@@ -1,0 +1,14 @@
+@inherits LayoutComponentBase
+
+<div class="flex h-screen overflow-hidden">
+    <Sidebar />
+    <main class="flex-1 ml-16 overflow-hidden">
+        @Body
+    </main>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet class="fixed bottom-0 left-0 right-0 z-50 bg-red-600 text-white text-center p-2 hidden">
+    Ocorreu um erro inesperado.
+    <a href="." class="underline ml-2">Recarregar</a>
+    <span class="dismiss cursor-pointer ml-4">X</span>
+</div>

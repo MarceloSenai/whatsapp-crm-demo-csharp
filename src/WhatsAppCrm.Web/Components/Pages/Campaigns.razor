@@ -1,0 +1,23 @@
+@page "/campaigns"
+
+<div class="h-full flex flex-col bg-gray-50">
+    @* Header *@
+    <div class="px-6 py-4 bg-white border-b border-gray-200">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-whatsapp"><path d="m3 11 18-5v12L3 13v-2z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
+                <h1 class="text-xl font-semibold text-gray-900">Campanhas</h1>
+            </div>
+            <a href="/campaigns/new"
+               class="px-4 py-2 bg-whatsapp text-white text-sm font-medium rounded-lg hover:bg-whatsapp-dark transition-colors flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Nova Campanha
+            </a>
+        </div>
+    </div>
+
+    @* Campaign List *@
+    <div class="flex-1 overflow-auto p-6">
+        <CampaignList />
+    </div>
+</div>

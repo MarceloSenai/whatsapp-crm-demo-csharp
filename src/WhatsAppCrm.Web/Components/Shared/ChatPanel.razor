@@ -1,0 +1,204 @@
+@inject HttpClient Http
+@inject IJSRuntime JS
+@implements IDisposable
+
+@if (string.IsNullOrEmpty(ConversationId))
+{
+    @* Empty State *@
+    <div class="flex items-center justify-center h-full bg-gray-50">
+        <div class="text-center">
+            <div class="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-600 mb-1">Selecione uma conversa</h3>
+            <p class="text-sm text-gray-400">Escolha uma conversa na lista ao lado para comecar</p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="flex flex-col h-full">
+        @* Chat Header *@
+        <div class="px-4 py-3 bg-white border-b border-gray-200 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-whatsapp flex items-center justify-center text-white text-sm font-medium">
+                    @GetInitials(_contactName)
+                </div>
+                <div>
+                    <div class="font-medium text-gray-900 text-sm">@_contactName</div>
+                    <div class="flex items-center gap-2">
+                        @if (!string.IsNullOrEmpty(_status))
+                        {
+                            <span class="@StatusBadgeClass">@StatusLabel</span>
+                        }
+                        @if (!string.IsNullOrEmpty(_contactPhone))
+                        {
+                            <span class="text-xs text-gray-400">@Formatters.FormatPhone(_contactPhone)</span>
+                        }
+                    </div>
+                </div>
+            </div>
+            <button @onclick="() => OnToggleContactInfo.InvokeAsync()"
+                    class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors"
+                    title="Informacoes do contato">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+            </button>
+        </div>
+
+        @* Messages Area *@
+        <div id="messages-container" class="flex-1 overflow-y-auto p-4 chat-bg scrollbar-thin">
+            @if (_messages is null)
+            {
+                <div class="flex items-center justify-center h-full">
+                    <div class="animate-spin w-6 h-6 border-2 border-whatsapp border-t-transparent rounded-full"></div>
+                </div>
+            }
+            else if (_messages.Count == 0)
+            {
+                <div class="flex items-center justify-center h-full text-gray-400 text-sm">
+                    Nenhuma mensagem ainda
+                </div>
+            }
+            else
+            {
+                <div class="space-y-1 max-w-3xl mx-auto">
+                    @foreach (var msg in _messages)
+                    {
+                        <MessageBubble Direction="@msg.Direction"
+                                       Content="@msg.Content"
+                                       Status="@msg.Status"
+                                       CreatedAt="@msg.CreatedAt" />
+                    }
+                </div>
+            }
+        </div>
+
+        @* Message Input *@
+        <MessageInput ConversationId="@ConversationId" OnMessageSent="HandleMessageSent" />
+    </div>
+}
+
+@code {
+    [Parameter] public string? ConversationId { get; set; }
+    [Parameter] public EventCallback OnToggleContactInfo { get; set; }
+
+    private List<MessageItem>? _messages;
+    private string _contactName = "";
+    private string _contactPhone = "";
+    private string _status = "";
+    private Timer? _pollTimer;
+    private string? _lastConversationId;
+
+    private string StatusLabel => _status switch
+    {
+        "open" => "Aberto",
+        "waiting" => "Aguardando",
+        "closed" => "Fechado",
+        _ => _status
+    };
+
+    private string StatusBadgeClass => _status switch
+    {
+        "open" => "px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700",
+        "waiting" => "px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700",
+        "closed" => "px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600",
+        _ => "px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600"
+    };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (ConversationId != _lastConversationId)
+        {
+            _lastConversationId = ConversationId;
+            _messages = null;
+            if (!string.IsNullOrEmpty(ConversationId))
+            {
+                await LoadMessages();
+                await LoadConversationInfo();
+                StartPolling();
+            }
+        }
+    }
+
+    private void StartPolling()
+    {
+        _pollTimer?.Dispose();
+        _pollTimer = new Timer(async _ =>
+        {
+            if (!string.IsNullOrEmpty(ConversationId))
+            {
+                await LoadMessages();
+                await InvokeAsync(StateHasChanged);
+                try { await JS.InvokeVoidAsync("scrollToBottom", "messages-container"); } catch { }
+            }
+        }, null, 2000, 2000);
+    }
+
+    private async Task LoadMessages()
+    {
+        try
+        {
+            var data = await Http.GetFromJsonAsync<JsonElement>($"/api/messages?conversationId={ConversationId}");
+            _messages = [];
+
+            foreach (var item in data.EnumerateArray())
+            {
+                _messages.Add(new MessageItem
+                {
+                    Id = item.GetProperty("id").GetString()!,
+                    Direction = item.GetProperty("direction").GetString()!,
+                    Content = item.GetProperty("content").GetString()!,
+                    Status = item.GetProperty("status").GetString()!,
+                    CreatedAt = item.GetProperty("createdAt").GetDateTime()
+                });
+            }
+        }
+        catch { /* ignore polling errors */ }
+    }
+
+    private async Task LoadConversationInfo()
+    {
+        try
+        {
+            var data = await Http.GetFromJsonAsync<JsonElement>("/api/conversations");
+            foreach (var item in data.EnumerateArray())
+            {
+                if (item.GetProperty("id").GetString() == ConversationId)
+                {
+                    _contactName = item.GetProperty("contact").GetProperty("name").GetString()!;
+                    _contactPhone = item.GetProperty("contact").GetProperty("phone").GetString()!;
+                    _status = item.GetProperty("status").GetString()!;
+                    break;
+                }
+            }
+        }
+        catch { /* ignore */ }
+    }
+
+    private async Task HandleMessageSent()
+    {
+        await LoadMessages();
+        StateHasChanged();
+        try { await JS.InvokeVoidAsync("scrollToBottom", "messages-container"); } catch { }
+    }
+
+    private string GetInitials(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "?";
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length >= 2)
+            return $"{parts[0][0]}{parts[^1][0]}".ToUpperInvariant();
+        return parts[0][0].ToString().ToUpperInvariant();
+    }
+
+    public void Dispose() => _pollTimer?.Dispose();
+
+    private class MessageItem
+    {
+        public string Id { get; set; } = "";
+        public string Direction { get; set; } = "";
+        public string Content { get; set; } = "";
+        public string Status { get; set; } = "";
+        public DateTime CreatedAt { get; set; }
+    }
+}

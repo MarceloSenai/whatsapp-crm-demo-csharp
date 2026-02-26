@@ -1,0 +1,130 @@
+@inject HttpClient Http
+@inject IJSRuntime JS
+
+<div class="px-4 py-3 bg-white border-t border-gray-200">
+    <div class="flex items-end gap-2">
+        @* Template Picker *@
+        <div class="relative">
+            <button @onclick="ToggleTemplates"
+                    class="w-9 h-9 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors"
+                    title="Templates">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </button>
+
+            @if (showTemplates)
+            {
+                <div class="absolute bottom-12 left-0 w-72 bg-white rounded-lg shadow-xl border border-gray-200 max-h-64 overflow-y-auto z-50">
+                    <div class="p-2 border-b border-gray-100 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Templates
+                    </div>
+                    @if (templates == null)
+                    {
+                        <div class="p-4 text-center text-gray-400 text-sm">Carregando...</div>
+                    }
+                    else if (templates.Count == 0)
+                    {
+                        <div class="p-4 text-center text-gray-400 text-sm">Nenhum template</div>
+                    }
+                    else
+                    {
+                        @foreach (var t in templates)
+                        {
+                            <button class="w-full text-left px-3 py-2 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0"
+                                    @onclick="() => SelectTemplate(t.Content)">
+                                <div class="text-sm font-medium text-gray-900">@t.Name</div>
+                                <div class="text-xs text-gray-500 truncate mt-0.5">@t.Content</div>
+                            </button>
+                        }
+                    }
+                </div>
+            }
+        </div>
+
+        @* Text Input *@
+        <div class="flex-1">
+            <textarea @ref="textareaRef"
+                      @bind="message"
+                      @bind:event="oninput"
+                      @onkeydown="HandleKeyDown"
+                      placeholder="Digite uma mensagem..."
+                      rows="1"
+                      class="w-full px-4 py-2 bg-gray-100 rounded-2xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-whatsapp/30 scrollbar-thin"
+                      style="max-height: 120px; min-height: 38px;">
+            </textarea>
+        </div>
+
+        @* Send Button *@
+        <button @onclick="SendMessage"
+                class="w-9 h-9 rounded-full bg-whatsapp text-white flex items-center justify-center hover:bg-whatsapp-dark transition-colors disabled:opacity-50 flex-shrink-0"
+                disabled="@(string.IsNullOrWhiteSpace(message) || sending)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string? ConversationId { get; set; }
+    [Parameter] public EventCallback OnMessageSent { get; set; }
+
+    private string message = "";
+    private bool sending;
+    private bool showTemplates;
+    private List<TemplateDto>? templates;
+    private ElementReference textareaRef;
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !e.ShiftKey)
+        {
+            await SendMessage();
+        }
+    }
+
+    private async Task SendMessage()
+    {
+        if (string.IsNullOrWhiteSpace(message) || string.IsNullOrEmpty(ConversationId) || sending) return;
+        sending = true;
+        try
+        {
+            var payload = new { conversationId = ConversationId, content = message.Trim() };
+            await Http.PostAsJsonAsync("/api/messages", payload);
+            message = "";
+            await OnMessageSent.InvokeAsync();
+        }
+        catch { /* ignore send errors */ }
+        finally
+        {
+            sending = false;
+        }
+    }
+
+    private async Task ToggleTemplates()
+    {
+        showTemplates = !showTemplates;
+        if (showTemplates && templates == null)
+        {
+            try
+            {
+                templates = await Http.GetFromJsonAsync<List<TemplateDto>>("/api/templates");
+            }
+            catch
+            {
+                templates = [];
+            }
+        }
+    }
+
+    private void SelectTemplate(string content)
+    {
+        message = content;
+        showTemplates = false;
+    }
+
+    public class TemplateDto
+    {
+        public string Id { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string Content { get; set; } = "";
+        public string Category { get; set; } = "";
+    }
+}

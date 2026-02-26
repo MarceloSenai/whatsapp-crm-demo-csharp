@@ -1,0 +1,18 @@
+@inject NavigationManager Nav
+
+<a href="@Href"
+   class="@CssClasses"
+   title="@Title">
+    @ChildContent
+</a>
+
+@code {
+    [Parameter] public string Href { get; set; } = "/";
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public bool IsActive { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private string CssClasses => IsActive
+        ? "w-10 h-10 rounded-lg flex items-center justify-center bg-whatsapp text-white transition-colors"
+        : "w-10 h-10 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition-colors";
+}

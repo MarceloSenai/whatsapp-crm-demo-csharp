@@ -1,0 +1,29 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.dll
+*.exe
+*.pdb
+*.nupkg
+
+## IDE
+.vs/
+.vscode/
+.idea/
+*.swp
+*.sln.docstates
+
+## Build
+publish/
+out/
+
+## OS
+.DS_Store
+Thumbs.db
+
+## Environment
+.env
+appsettings.Development.json

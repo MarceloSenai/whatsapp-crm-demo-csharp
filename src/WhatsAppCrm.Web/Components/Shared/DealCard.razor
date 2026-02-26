@@ -1,0 +1,84 @@
+@using static WhatsAppCrm.Web.Components.Shared.KanbanBoard
+
+<div class="bg-white rounded-lg shadow-sm border border-gray-100 p-3 hover:shadow-md transition-shadow">
+    @* Title *@
+    <h4 class="font-medium text-sm text-gray-900 mb-1">@Deal.Title</h4>
+
+    @* Contact Name *@
+    <div class="flex items-center gap-1.5 mb-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span class="text-xs text-gray-500">@(Deal.Contact?.Name ?? "—")</span>
+    </div>
+
+    @* Value *@
+    <div class="text-sm font-semibold text-whatsapp-dark mb-2">
+        @Formatters.FormatCurrency(Deal.Value)
+    </div>
+
+    @* Tags *@
+    @{
+        var tags = Formatters.ParseTags(Deal.Contact?.Tags ?? "[]");
+    }
+    @if (tags.Length > 0)
+    {
+        <div class="flex flex-wrap gap-1 mb-2">
+            @foreach (var tag in tags.Take(3))
+            {
+                <span class="@TagColor(tag) px-1.5 py-0.5 rounded text-[10px] font-medium">
+                    @tag
+                </span>
+            }
+            @if (tags.Length > 3)
+            {
+                <span class="text-[10px] text-gray-400">+@(tags.Length - 3)</span>
+            }
+        </div>
+    }
+
+    @* Move Dropdown *@
+    @if (AllStages != null && AllStages.Count > 1)
+    {
+        <div class="mt-2 pt-2 border-t border-gray-50">
+            <select class="w-full text-xs border border-gray-200 rounded-md px-2 py-1 text-gray-600 focus:outline-none focus:ring-1 focus:ring-whatsapp/30 bg-gray-50"
+                    value="@CurrentStageId"
+                    @onchange="HandleStageChange">
+                @foreach (var stage in AllStages)
+                {
+                    <option value="@stage.Id" selected="@(stage.Id == CurrentStageId)">
+                        @(stage.Id == CurrentStageId ? $"— {stage.Name}" : $"Mover: {stage.Name}")
+                    </option>
+                }
+            </select>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public DealDto Deal { get; set; } = null!;
+    [Parameter] public List<StageDto>? AllStages { get; set; }
+    [Parameter] public string CurrentStageId { get; set; } = "";
+    [Parameter] public EventCallback<(string dealId, string stageId)> OnMove { get; set; }
+
+    private async Task HandleStageChange(ChangeEventArgs e)
+    {
+        var newStageId = e.Value?.ToString();
+        if (!string.IsNullOrEmpty(newStageId) && newStageId != CurrentStageId)
+        {
+            await OnMove.InvokeAsync((Deal.Id, newStageId));
+        }
+    }
+
+    private static string TagColor(string tag) => tag.ToLowerInvariant() switch
+    {
+        "vip" => "bg-amber-100 text-amber-800",
+        "lead" => "bg-blue-100 text-blue-800",
+        "cliente" => "bg-green-100 text-green-800",
+        "inativo" => "bg-gray-100 text-gray-800",
+        "prospecto" => "bg-purple-100 text-purple-800",
+        "construtora" => "bg-orange-100 text-orange-800",
+        "locadora" => "bg-cyan-100 text-cyan-800",
+        "prestadora" => "bg-pink-100 text-pink-800",
+        "pme" => "bg-indigo-100 text-indigo-800",
+        _ => "bg-gray-100 text-gray-700"
+    };
+}

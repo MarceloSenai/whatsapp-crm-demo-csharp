@@ -1,0 +1,146 @@
+@inject HttpClient Http
+
+<div class="flex flex-col h-full">
+    @* Header *@
+    <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+        <h3 class="font-medium text-gray-900 text-sm">Informacoes do Contato</h3>
+        <button @onclick="() => OnClose.InvokeAsync()"
+                class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+    </div>
+
+    @if (contact == null)
+    {
+        <div class="flex items-center justify-center h-32">
+            <div class="animate-spin w-6 h-6 border-2 border-whatsapp border-t-transparent rounded-full"></div>
+        </div>
+    }
+    else
+    {
+        <div class="flex-1 overflow-y-auto scrollbar-thin">
+            @* Avatar & Name *@
+            <div class="flex flex-col items-center py-6 px-4 border-b border-gray-100">
+                <div class="w-20 h-20 rounded-full bg-whatsapp flex items-center justify-center text-white text-2xl font-medium mb-3">
+                    @GetInitials(contact.Name)
+                </div>
+                <h4 class="font-semibold text-gray-900 text-lg">@contact.Name</h4>
+            </div>
+
+            @* Details *@
+            <div class="p-4 space-y-4">
+                @* Phone *@
+                <div class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 flex-shrink-0"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <span class="text-sm text-gray-700">@Formatters.FormatPhone(contact.Phone)</span>
+                </div>
+
+                @* Email *@
+                @if (!string.IsNullOrEmpty(contact.Email))
+                {
+                    <div class="flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 flex-shrink-0"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                        <span class="text-sm text-gray-700">@contact.Email</span>
+                    </div>
+                }
+
+                @* Created At *@
+                <div class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 flex-shrink-0"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <span class="text-sm text-gray-700">Desde @contact.CreatedAt.ToString("dd/MM/yyyy")</span>
+                </div>
+
+                @* Tags *@
+                @if (tags.Length > 0)
+                {
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/></svg>
+                            <span class="text-sm font-medium text-gray-700">Tags</span>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5">
+                            @foreach (var tag in tags)
+                            {
+                                <span class="@TagColor(tag) px-2 py-0.5 rounded-full text-xs font-medium">
+                                    @tag
+                                </span>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string? ConversationId { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private CIContact? contact;
+    private string[] tags = [];
+    private string? prevConvId;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (ConversationId != prevConvId)
+        {
+            prevConvId = ConversationId;
+            if (!string.IsNullOrEmpty(ConversationId))
+                await LoadContact();
+        }
+    }
+
+    private async Task LoadContact()
+    {
+        try
+        {
+            var convs = await Http.GetFromJsonAsync<List<CIConv>>("/api/conversations");
+            var conv = convs?.FirstOrDefault(c => c.Id == ConversationId);
+            if (conv?.Contact != null)
+            {
+                contact = conv.Contact;
+                tags = Formatters.ParseTags(contact.Tags);
+            }
+        }
+        catch { /* ignore */ }
+    }
+
+    private string GetInitials(string? name)
+    {
+        if (string.IsNullOrEmpty(name)) return "?";
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length >= 2)
+            return $"{parts[0][0]}{parts[^1][0]}".ToUpperInvariant();
+        return parts[0][0].ToString().ToUpperInvariant();
+    }
+
+    private static string TagColor(string tag) => tag.ToLowerInvariant() switch
+    {
+        "vip" => "bg-amber-100 text-amber-800",
+        "lead" => "bg-blue-100 text-blue-800",
+        "cliente" => "bg-green-100 text-green-800",
+        "inativo" => "bg-gray-100 text-gray-800",
+        "prospecto" => "bg-purple-100 text-purple-800",
+        "construtora" => "bg-orange-100 text-orange-800",
+        "locadora" => "bg-cyan-100 text-cyan-800",
+        "prestadora" => "bg-pink-100 text-pink-800",
+        "pme" => "bg-indigo-100 text-indigo-800",
+        _ => "bg-gray-100 text-gray-700"
+    };
+
+    public class CIConv
+    {
+        public string Id { get; set; } = "";
+        public CIContact? Contact { get; set; }
+    }
+
+    public class CIContact
+    {
+        public string Name { get; set; } = "";
+        public string Phone { get; set; } = "";
+        public string? Email { get; set; }
+        public string Tags { get; set; } = "[]";
+        public DateTime CreatedAt { get; set; }
+    }
+}

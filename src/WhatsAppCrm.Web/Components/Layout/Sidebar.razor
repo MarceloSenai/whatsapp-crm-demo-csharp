@@ -1,0 +1,119 @@
+@inject NavigationManager Nav
+@inject HttpClient Http
+
+<nav class="fixed left-0 top-0 h-screen w-16 bg-slate-800 flex flex-col items-center py-4 z-50">
+    @* Logo *@
+    <div class="w-10 h-10 rounded-full bg-whatsapp flex items-center justify-center text-white font-bold text-lg mb-8">
+        W
+    </div>
+
+    @* Navigation Items *@
+    <div class="flex flex-col items-center gap-2 flex-1">
+        <NavItem Href="/inbox" Title="Inbox" IsActive="@IsActive("/inbox")">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </NavItem>
+
+        <NavItem Href="/pipeline" Title="Pipeline" IsActive="@IsActive("/pipeline")">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </NavItem>
+
+        <NavItem Href="/campaigns" Title="Campanhas" IsActive="@IsActive("/campaigns")">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 13v-2z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
+        </NavItem>
+
+        <NavItem Href="/contacts" Title="Contatos" IsActive="@IsActive("/contacts")">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </NavItem>
+
+        <NavItem Href="/about" Title="Sobre" IsActive="@IsActive("/about")">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        </NavItem>
+    </div>
+
+    @* Bottom section *@
+    <div class="flex flex-col items-center gap-2 mt-auto">
+        @* Reset button *@
+        <button @onclick="ShowResetModal"
+                class="w-10 h-10 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
+                title="Resetar Demo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        </button>
+
+        @* GitHub link *@
+        <a href="https://github.com/MarceloSenai/whatsapp-crm-demo"
+           target="_blank"
+           class="w-10 h-10 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
+           title="GitHub">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+        </a>
+    </div>
+</nav>
+
+@* Reset Modal *@
+@if (_showResetModal)
+{
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-[100]" @onclick="HideResetModal">
+        <div class="bg-white rounded-xl shadow-xl p-6 w-96 max-w-[90vw]" @onclick:stopPropagation>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Resetar Demo?</h3>
+            <p class="text-sm text-gray-500 mb-6">
+                Todos os dados serao apagados e recriados com os dados iniciais de demonstracao. Esta acao nao pode ser desfeita.
+            </p>
+            <div class="flex gap-3 justify-end">
+                <button @onclick="HideResetModal"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                        disabled="@_isResetting">
+                    Cancelar
+                </button>
+                <button @onclick="ResetDemo"
+                        class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                        disabled="@_isResetting">
+                    @if (_isResetting)
+                    {
+                        <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>Resetando...</span>
+                    }
+                    else
+                    {
+                        <span>Resetar</span>
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool _showResetModal;
+    private bool _isResetting;
+
+    private bool IsActive(string path)
+    {
+        var uri = Nav.ToBaseRelativePath(Nav.Uri);
+        return $"/{uri}".StartsWith(path, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void ShowResetModal() => _showResetModal = true;
+    private void HideResetModal() => _showResetModal = false;
+
+    private async Task ResetDemo()
+    {
+        _isResetting = true;
+        try
+        {
+            await Http.PostAsync("/api/reset", null);
+            _showResetModal = false;
+            Nav.NavigateTo(Nav.Uri, forceLoad: true);
+        }
+        catch
+        {
+            // ignore errors
+        }
+        finally
+        {
+            _isResetting = false;
+        }
+    }
+}

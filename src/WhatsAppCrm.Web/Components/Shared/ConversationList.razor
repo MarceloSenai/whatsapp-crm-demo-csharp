@@ -1,0 +1,187 @@
+@inject HttpClient Http
+@implements IDisposable
+
+<div class="flex flex-col h-full">
+    @* Header *@
+    <div class="p-4 border-b border-gray-200">
+        <h2 class="text-lg font-semibold text-gray-900 mb-3">Conversas</h2>
+        @* Search *@
+        <div class="relative">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text"
+                   placeholder="Buscar contato..."
+                   class="w-full pl-9 pr-3 py-2 text-sm bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-whatsapp/30"
+                   @bind="searchTerm"
+                   @bind:event="oninput" />
+        </div>
+    </div>
+
+    @* Status Tabs *@
+    <div class="flex border-b border-gray-200 px-2">
+        @foreach (var tab in tabs)
+        {
+            <button class="@TabClass(tab.Key)"
+                    @onclick="() => activeTab = tab.Key">
+                @tab.Value
+            </button>
+        }
+    </div>
+
+    @* Conversation Items *@
+    <div class="flex-1 overflow-y-auto scrollbar-thin">
+        @if (conversations == null)
+        {
+            <div class="flex items-center justify-center h-32">
+                <div class="animate-spin w-6 h-6 border-2 border-whatsapp border-t-transparent rounded-full"></div>
+            </div>
+        }
+        else if (!FilteredConversations.Any())
+        {
+            <div class="flex items-center justify-center h-32 text-gray-400 text-sm">
+                Nenhuma conversa encontrada
+            </div>
+        }
+        else
+        {
+            @foreach (var conv in FilteredConversations)
+            {
+                var isSelected = conv.Id == SelectedId;
+                <button class="@ConversationItemClass(isSelected)"
+                        @onclick="() => OnSelect.InvokeAsync(conv.Id)">
+                    @* Avatar *@
+                    <div class="w-10 h-10 rounded-full bg-whatsapp flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
+                        @GetInitials(conv.Contact?.Name)
+                    </div>
+
+                    @* Content *@
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                            <span class="font-medium text-gray-900 text-sm truncate">@conv.Contact?.Name</span>
+                            <span class="text-xs text-gray-400 flex-shrink-0 ml-2">
+                                @Formatters.TimeAgo(conv.LastMessageAt ?? conv.CreatedAt)
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between mt-0.5">
+                            <span class="text-xs text-gray-500 truncate">
+                                @(conv.LastMessage?.Content ?? "Sem mensagens")
+                            </span>
+                            @if (conv.UnreadCount > 0)
+                            {
+                                <span class="ml-2 min-w-[20px] h-5 bg-whatsapp text-white text-xs font-medium rounded-full flex items-center justify-center flex-shrink-0 px-1.5">
+                                    @conv.UnreadCount
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </button>
+            }
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public string? SelectedId { get; set; }
+    [Parameter] public EventCallback<string> OnSelect { get; set; }
+
+    private List<ConversationDto>? conversations;
+    private string searchTerm = "";
+    private string activeTab = "all";
+    private Timer? pollTimer;
+
+    private readonly Dictionary<string, string> tabs = new()
+    {
+        ["all"] = "Todos",
+        ["open"] = "Abertos",
+        ["waiting"] = "Aguardando",
+        ["closed"] = "Fechados"
+    };
+
+    private IEnumerable<ConversationDto> FilteredConversations
+    {
+        get
+        {
+            var filtered = (conversations ?? []).AsEnumerable();
+
+            if (activeTab != "all")
+                filtered = filtered.Where(c => c.Status == activeTab);
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var term = Formatters.RemoveDiacritics(searchTerm.ToLowerInvariant());
+                filtered = filtered.Where(c =>
+                    Formatters.RemoveDiacritics((c.Contact?.Name ?? "").ToLowerInvariant()).Contains(term));
+            }
+
+            return filtered;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadConversations();
+        pollTimer = new Timer(async _ =>
+        {
+            await LoadConversations();
+            await InvokeAsync(StateHasChanged);
+        }, null, 3000, 3000);
+    }
+
+    private async Task LoadConversations()
+    {
+        try
+        {
+            conversations = await Http.GetFromJsonAsync<List<ConversationDto>>("/api/conversations");
+        }
+        catch { /* ignore polling errors */ }
+    }
+
+    private string GetInitials(string? name)
+    {
+        if (string.IsNullOrEmpty(name)) return "?";
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length >= 2)
+            return $"{parts[0][0]}{parts[^1][0]}".ToUpperInvariant();
+        return parts[0][0].ToString().ToUpperInvariant();
+    }
+
+    private string TabClass(string tab) =>
+        tab == activeTab
+            ? "flex-1 py-2 text-xs font-medium text-whatsapp border-b-2 border-whatsapp text-center"
+            : "flex-1 py-2 text-xs font-medium text-gray-500 hover:text-gray-700 text-center";
+
+    private string ConversationItemClass(bool isSelected) =>
+        isSelected
+            ? "w-full flex items-center gap-3 px-4 py-3 bg-blue-50 border-l-2 border-whatsapp text-left transition-colors"
+            : "w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 border-l-2 border-transparent text-left transition-colors";
+
+    public void Dispose() => pollTimer?.Dispose();
+
+    public class ConversationDto
+    {
+        public string Id { get; set; } = "";
+        public string ContactId { get; set; } = "";
+        public string Status { get; set; } = "";
+        public string? AssignedTo { get; set; }
+        public DateTime? LastMessageAt { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public int UnreadCount { get; set; }
+        public ContactDto? Contact { get; set; }
+        public MessageDto? LastMessage { get; set; }
+    }
+
+    public class ContactDto
+    {
+        public string Id { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string Phone { get; set; } = "";
+        public string? Email { get; set; }
+        public string? AvatarUrl { get; set; }
+        public string Tags { get; set; } = "[]";
+    }
+
+    public class MessageDto
+    {
+        public string Content { get; set; } = "";
+        public DateTime CreatedAt { get; set; }
+    }
+}

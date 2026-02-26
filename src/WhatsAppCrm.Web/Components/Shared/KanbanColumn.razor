@@ -1,0 +1,40 @@
+@using static WhatsAppCrm.Web.Components.Shared.KanbanBoard
+
+<div class="flex-shrink-0 w-72 bg-gray-50 rounded-xl flex flex-col max-h-full border border-gray-200">
+    @* Header *@
+    <div class="p-3 border-b border-gray-200">
+        <div class="flex items-center gap-2 mb-1">
+            <div class="w-3 h-3 rounded-full" style="background-color: @Stage.Color"></div>
+            <h3 class="font-semibold text-sm text-gray-800">@Stage.Name</h3>
+            <span class="ml-auto bg-gray-200 text-gray-600 text-xs font-medium rounded-full w-5 h-5 flex items-center justify-center">
+                @(Stage.Deals?.Count ?? 0)
+            </span>
+        </div>
+        <div class="text-xs text-gray-500">
+            @Formatters.FormatCurrency(Stage.Deals?.Sum(d => d.Value) ?? 0)
+        </div>
+    </div>
+
+    @* Deals *@
+    <div class="flex-1 overflow-y-auto p-2 space-y-2 scrollbar-thin">
+        @if (Stage.Deals == null || Stage.Deals.Count == 0)
+        {
+            <div class="border-2 border-dashed border-gray-200 rounded-lg p-4 text-center">
+                <p class="text-xs text-gray-400">Nenhum deal</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var deal in Stage.Deals)
+            {
+                <DealCard Deal="deal" AllStages="AllStages" CurrentStageId="@Stage.Id" OnMove="OnMoveDeal" />
+            }
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public StageDto Stage { get; set; } = null!;
+    [Parameter] public List<StageDto>? AllStages { get; set; }
+    [Parameter] public EventCallback<(string dealId, string stageId)> OnMoveDeal { get; set; }
+}

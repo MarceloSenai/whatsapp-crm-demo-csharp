@@ -3,10 +3,10 @@
 <div class="h-full overflow-auto bg-gray-50">
     <div class="max-w-4xl mx-auto p-8">
         <h1 class="text-3xl font-bold text-gray-900 mb-2">WhatsApp CRM Demo</h1>
-        <p class="text-gray-500 mb-8">Protótipo full stack demonstrando um CRM com integração WhatsApp simulada. Disponível em duas versões para comparação técnica.</p>
+        <p class="text-gray-500 mb-8">Protótipo full stack demonstrando um CRM com integração WhatsApp simulada. Disponível em três versões para comparação técnica.</p>
 
         @* Version Cards *@
-        <div class="grid md:grid-cols-2 gap-6 mb-10">
+        <div class="grid md:grid-cols-3 gap-4 mb-10">
             <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-10 h-10 rounded-lg bg-black flex items-center justify-center"><span class="text-white font-bold text-sm">TS</span></div>
@@ -39,6 +39,23 @@
                 <div class="flex gap-2">
                     <a href="https://whatsapp-crm-csharp.onrender.com" target="_blank" class="flex-1 text-center px-3 py-2 text-xs bg-[#25d366] text-white rounded-lg hover:bg-[#1da851] transition-colors">Demo Live</a>
                     <a href="https://github.com/MarceloSenai/whatsapp-crm-demo-csharp" target="_blank" class="flex-1 text-center px-3 py-2 text-xs bg-[#512bd4] text-white rounded-lg hover:bg-[#3b1f9e] transition-colors">GitHub C#</a>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-[#25d366] flex items-center justify-center"><span class="text-white font-bold text-sm">Z</span></div>
+                    <div><h3 class="font-semibold text-gray-900">Versão C# + Z-API</h3><p class="text-xs text-gray-400">Blazor + WhatsApp Real</p></div>
+                </div>
+                <div class="space-y-2 text-sm text-gray-600 mb-4">
+                    <div class="flex justify-between"><span>Framework</span><span class="font-medium">ASP.NET Core 9</span></div>
+                    <div class="flex justify-between"><span>WhatsApp</span><span class="font-medium text-[#25d366]">Z-API (real)</span></div>
+                    <div class="flex justify-between"><span>UI</span><span class="font-medium">Blazor Server + Tailwind</span></div>
+                    <div class="flex justify-between"><span>Modo</span><span class="font-medium">Dual (sim + real)</span></div>
+                    <div class="flex justify-between"><span>Deploy</span><span class="font-medium">Docker / Render</span></div>
+                </div>
+                <div class="flex gap-2">
+                    <a href="https://whatsapp-crm-zapi.onrender.com" target="_blank" class="flex-1 text-center px-3 py-2 text-xs bg-[#25d366] text-white rounded-lg hover:bg-[#1da851] transition-colors">Demo Z-API</a>
+                    <a href="https://github.com/MarceloSenai/whatsapp-crm-zapi" target="_blank" class="flex-1 text-center px-3 py-2 text-xs border border-[#25d366] text-[#25d366] rounded-lg hover:bg-[#25d366]/5 transition-colors">GitHub</a>
                 </div>
             </div>
         </div>

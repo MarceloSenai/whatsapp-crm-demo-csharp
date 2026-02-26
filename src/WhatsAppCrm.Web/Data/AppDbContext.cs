@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using WhatsAppCrm.Web.Entities;
 
 namespace WhatsAppCrm.Web.Data;
@@ -89,5 +90,25 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         {
             e.HasKey(t => t.Id);
         });
+
+        // ============================================================
+        // Convert column names to camelCase to match existing Prisma schema.
+        // Prisma creates camelCase columns (contactId, lastMessageAt, etc.)
+        // but EF Core defaults to PascalCase (ContactId, LastMessageAt).
+        // PostgreSQL is case-sensitive with quoted identifiers.
+        // ============================================================
+        foreach (var entity in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (var property in entity.GetProperties())
+            {
+                var storeObjectId = StoreObjectIdentifier.Table(
+                    entity.GetTableName()!, entity.GetSchema());
+                var columnName = property.GetColumnName(storeObjectId);
+                if (!string.IsNullOrEmpty(columnName) && char.IsUpper(columnName[0]))
+                {
+                    property.SetColumnName(char.ToLowerInvariant(columnName[0]) + columnName[1..]);
+                }
+            }
+        }
     }
 }

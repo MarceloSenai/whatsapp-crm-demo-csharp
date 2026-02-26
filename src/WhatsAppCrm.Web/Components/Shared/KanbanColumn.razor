@@ -15,19 +15,19 @@
         </div>
     </div>
 
-    @* Deals *@
-    <div class="flex-1 overflow-y-auto p-2 space-y-2 scrollbar-thin">
+    @* Deals — sortable container *@
+    <div class="flex-1 overflow-y-auto p-2 space-y-2 scrollbar-thin kanban-sortable" data-stage-id="@Stage.Id" style="min-height: 60px;">
         @if (Stage.Deals == null || Stage.Deals.Count == 0)
         {
-            <div class="border-2 border-dashed border-gray-200 rounded-lg p-4 text-center">
-                <p class="text-xs text-gray-400">Nenhum deal</p>
+            <div class="border-2 border-dashed border-gray-200 rounded-lg p-4 text-center kanban-empty-hint">
+                <p class="text-xs text-gray-400">Arraste deals aqui</p>
             </div>
         }
         else
         {
             @foreach (var deal in Stage.Deals)
             {
-                <DealCard Deal="deal" AllStages="AllStages" CurrentStageId="@Stage.Id" OnMove="OnMoveDeal" />
+                <DealCard Deal="deal" />
             }
         }
     </div>
@@ -35,6 +35,4 @@
 
 @code {
     [Parameter] public StageDto Stage { get; set; } = null!;
-    [Parameter] public List<StageDto>? AllStages { get; set; }
-    [Parameter] public EventCallback<(string dealId, string stageId)> OnMoveDeal { get; set; }
 }

@@ -25,12 +25,20 @@
             background-color: #e5ddd5;
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c8c4be' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
+        /* SortableJS — Pipeline drag-and-drop */
+        .sortable-ghost { opacity: 0.4; background: #e0f2fe !important; border: 2px dashed #38bdf8 !important; border-radius: 0.5rem; }
+        .sortable-chosen { box-shadow: 0 8px 25px -5px rgba(0,0,0,0.15); transform: rotate(2deg); }
+        .sortable-drag { opacity: 0.95; transform: rotate(3deg); }
+        .deal-card { cursor: grab; }
+        .deal-card:active { cursor: grabbing; }
     </style>
     <HeadOutlet @rendermode="InteractiveServer" />
 </head>
 <body class="bg-gray-100 antialiased">
     <Routes @rendermode="InteractiveServer" />
     <script src="_framework/blazor.web.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/pipeline-interop.js"></script>
 </body>
 </html>

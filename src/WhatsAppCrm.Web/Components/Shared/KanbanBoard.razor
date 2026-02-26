@@ -1,4 +1,6 @@
 @inject HttpClient Http
+@inject IJSRuntime JS
+@implements IDisposable
 
 @if (loading)
 {
@@ -11,7 +13,7 @@ else if (pipeline != null)
     <div class="flex gap-4 overflow-x-auto p-4 h-full">
         @foreach (var stage in pipeline.Stages ?? [])
         {
-            <KanbanColumn Stage="stage" AllStages="pipeline.Stages" OnMoveDeal="MoveDeal" />
+            <KanbanColumn Stage="stage" />
         }
     </div>
 }
@@ -25,10 +27,26 @@ else
 @code {
     private PipelineDto? pipeline;
     private bool loading = true;
+    private DotNetObjectReference<KanbanBoard>? _dotNetRef;
+    private bool _sortableInitialized;
 
     protected override async Task OnInitializedAsync()
     {
         await LoadPipeline();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_sortableInitialized && pipeline?.Stages != null && pipeline.Stages.Count > 0)
+        {
+            _dotNetRef ??= DotNetObjectReference.Create(this);
+            try
+            {
+                await JS.InvokeVoidAsync("initSortable", _dotNetRef);
+                _sortableInitialized = true;
+            }
+            catch { /* SSR or prerender — ignore */ }
+        }
     }
 
     private async Task LoadPipeline()
@@ -42,14 +60,23 @@ else
         loading = false;
     }
 
-    private async Task MoveDeal((string dealId, string stageId) move)
+    [JSInvokable]
+    public async Task OnDealMoved(string dealId, string stageId)
     {
         try
         {
-            await Http.PatchAsJsonAsync("/api/pipeline", new { dealId = move.dealId, stageId = move.stageId });
+            await Http.PatchAsJsonAsync("/api/pipeline", new { dealId, stageId });
             await LoadPipeline();
+            _sortableInitialized = false;
+            await InvokeAsync(StateHasChanged);
         }
         catch { /* ignore */ }
+    }
+
+    public void Dispose()
+    {
+        try { JS.InvokeVoidAsync("destroySortable"); } catch { }
+        _dotNetRef?.Dispose();
     }
 
     public class PipelineDto

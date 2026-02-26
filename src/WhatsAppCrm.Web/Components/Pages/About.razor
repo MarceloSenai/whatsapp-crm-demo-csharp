@@ -1,120 +1,400 @@
 @page "/about"
 
 <div class="h-full overflow-auto bg-gray-50">
-    <div class="max-w-4xl mx-auto p-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">WhatsApp CRM Demo</h1>
-        <p class="text-gray-500 mb-8">Protótipo full stack demonstrando um CRM com integração WhatsApp simulada. Disponível em três versões para comparação técnica.</p>
+    <div class="max-w-5xl mx-auto p-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">WhatsApp CRM Demo — Documentacao Tecnica</h1>
+        <p class="text-gray-500 mb-8">Referencia arquitetural completa para desenvolvedores. Tres versoes do mesmo CRM para comparacao de stack.</p>
 
-        @* Version Cards *@
-        <div class="grid md:grid-cols-3 gap-4 mb-10">
-            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-                <div class="flex items-center gap-3 mb-4">
+        @* ===== VERSION CARDS ===== *@
+        <div class="grid md:grid-cols-3 gap-4 mb-12">
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-200">
+                <div class="flex items-center gap-3 mb-3">
                     <div class="w-10 h-10 rounded-lg bg-black flex items-center justify-center"><span class="text-white font-bold text-sm">TS</span></div>
-                    <div><h3 class="font-semibold text-gray-900">Versão TypeScript</h3><p class="text-xs text-gray-400">Next.js + Prisma + React</p></div>
+                    <div><h3 class="font-semibold text-gray-900 text-sm">TypeScript</h3><p class="text-[10px] text-gray-400">Next.js 16 + Prisma 6</p></div>
                 </div>
-                <div class="space-y-2 text-sm text-gray-600 mb-4">
-                    <div class="flex justify-between"><span>Framework</span><span class="font-medium">Next.js 16</span></div>
-                    <div class="flex justify-between"><span>ORM</span><span class="font-medium">Prisma 6</span></div>
-                    <div class="flex justify-between"><span>UI</span><span class="font-medium">React + Tailwind CSS</span></div>
-                    <div class="flex justify-between"><span>Drag &amp; Drop</span><span class="font-medium">@("@dnd-kit")</span></div>
-                    <div class="flex justify-between"><span>Deploy</span><span class="font-medium">Docker / Render</span></div>
+                <div class="space-y-1.5 text-xs text-gray-600 mb-3">
+                    <div class="flex justify-between"><span>Runtime</span><span class="font-medium">Node.js 20</span></div>
+                    <div class="flex justify-between"><span>UI</span><span class="font-medium">React Server Components</span></div>
+                    <div class="flex justify-between"><span>WhatsApp</span><span class="font-medium">Simulador</span></div>
                 </div>
                 <div class="flex gap-2">
-                    <a href="https://whatsapp-crm-demo-1tqv.onrender.com" target="_blank" class="flex-1 text-center px-3 py-2 text-xs bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors">Ver Demo TS</a>
-                    <a href="https://github.com/MarceloSenai/whatsapp-crm-demo" target="_blank" class="flex-1 text-center px-3 py-2 text-xs border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">GitHub TS</a>
+                    <a href="https://whatsapp-crm-demo-1tqv.onrender.com" target="_blank" class="flex-1 text-center px-2 py-1.5 text-[10px] bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors">Demo</a>
+                    <a href="https://github.com/MarceloSenai/whatsapp-crm-demo" target="_blank" class="flex-1 text-center px-2 py-1.5 text-[10px] border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">GitHub</a>
                 </div>
             </div>
-            <div class="bg-white rounded-xl p-6 shadow-sm border-2 border-[#25d366]">
-                <div class="flex items-center gap-3 mb-4">
+            <div class="bg-white rounded-xl p-5 shadow-sm border-2 border-[#512bd4]">
+                <div class="flex items-center gap-3 mb-3">
                     <div class="w-10 h-10 rounded-lg bg-[#512bd4] flex items-center justify-center"><span class="text-white font-bold text-sm">C#</span></div>
-                    <div><h3 class="font-semibold text-gray-900">Versão C#</h3><span class="text-[10px] px-1.5 py-0.5 bg-[#25d366] text-white rounded-full">Você está aqui</span></div>
+                    <div><h3 class="font-semibold text-gray-900 text-sm">C# Blazor</h3><span class="text-[10px] px-1.5 py-0.5 bg-[#512bd4] text-white rounded-full">Voce esta aqui</span></div>
                 </div>
-                <div class="space-y-2 text-sm text-gray-600 mb-4">
-                    <div class="flex justify-between"><span>Framework</span><span class="font-medium">ASP.NET Core 9</span></div>
-                    <div class="flex justify-between"><span>ORM</span><span class="font-medium">EF Core 9 + Npgsql</span></div>
-                    <div class="flex justify-between"><span>UI</span><span class="font-medium">Blazor Server + Tailwind</span></div>
-                    <div class="flex justify-between"><span>Pipeline</span><span class="font-medium">Dropdown Move</span></div>
-                    <div class="flex justify-between"><span>Deploy</span><span class="font-medium">Docker / Render</span></div>
+                <div class="space-y-1.5 text-xs text-gray-600 mb-3">
+                    <div class="flex justify-between"><span>Runtime</span><span class="font-medium">.NET 9</span></div>
+                    <div class="flex justify-between"><span>UI</span><span class="font-medium">Blazor Server (SignalR)</span></div>
+                    <div class="flex justify-between"><span>WhatsApp</span><span class="font-medium">Simulador</span></div>
                 </div>
                 <div class="flex gap-2">
-                    <a href="https://whatsapp-crm-csharp.onrender.com" target="_blank" class="flex-1 text-center px-3 py-2 text-xs bg-[#25d366] text-white rounded-lg hover:bg-[#1da851] transition-colors">Demo Live</a>
-                    <a href="https://github.com/MarceloSenai/whatsapp-crm-demo-csharp" target="_blank" class="flex-1 text-center px-3 py-2 text-xs bg-[#512bd4] text-white rounded-lg hover:bg-[#3b1f9e] transition-colors">GitHub C#</a>
+                    <a href="https://whatsapp-crm-csharp.onrender.com" target="_blank" class="flex-1 text-center px-2 py-1.5 text-[10px] bg-[#512bd4] text-white rounded-lg hover:bg-[#3b1f9e] transition-colors">Demo</a>
+                    <a href="https://github.com/MarceloSenai/whatsapp-crm-demo-csharp" target="_blank" class="flex-1 text-center px-2 py-1.5 text-[10px] border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">GitHub</a>
                 </div>
             </div>
-            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-                <div class="flex items-center gap-3 mb-4">
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-200">
+                <div class="flex items-center gap-3 mb-3">
                     <div class="w-10 h-10 rounded-lg bg-[#25d366] flex items-center justify-center"><span class="text-white font-bold text-sm">Z</span></div>
-                    <div><h3 class="font-semibold text-gray-900">Versão C# + Z-API</h3><p class="text-xs text-gray-400">Blazor + WhatsApp Real</p></div>
+                    <div><h3 class="font-semibold text-gray-900 text-sm">C# + Z-API</h3><p class="text-[10px] text-gray-400">Blazor + WhatsApp Real</p></div>
                 </div>
-                <div class="space-y-2 text-sm text-gray-600 mb-4">
-                    <div class="flex justify-between"><span>Framework</span><span class="font-medium">ASP.NET Core 9</span></div>
+                <div class="space-y-1.5 text-xs text-gray-600 mb-3">
+                    <div class="flex justify-between"><span>Runtime</span><span class="font-medium">.NET 9</span></div>
+                    <div class="flex justify-between"><span>UI</span><span class="font-medium">Blazor Server (SignalR)</span></div>
                     <div class="flex justify-between"><span>WhatsApp</span><span class="font-medium text-[#25d366]">Z-API (real)</span></div>
-                    <div class="flex justify-between"><span>UI</span><span class="font-medium">Blazor Server + Tailwind</span></div>
-                    <div class="flex justify-between"><span>Modo</span><span class="font-medium">Dual (sim + real)</span></div>
-                    <div class="flex justify-between"><span>Deploy</span><span class="font-medium">Docker / Render</span></div>
                 </div>
                 <div class="flex gap-2">
-                    <a href="https://whatsapp-crm-zapi.onrender.com" target="_blank" class="flex-1 text-center px-3 py-2 text-xs bg-[#25d366] text-white rounded-lg hover:bg-[#1da851] transition-colors">Demo Z-API</a>
-                    <a href="https://github.com/MarceloSenai/whatsapp-crm-zapi" target="_blank" class="flex-1 text-center px-3 py-2 text-xs border border-[#25d366] text-[#25d366] rounded-lg hover:bg-[#25d366]/5 transition-colors">GitHub</a>
+                    <a href="https://whatsapp-crm-zapi.onrender.com" target="_blank" class="flex-1 text-center px-2 py-1.5 text-[10px] bg-[#25d366] text-white rounded-lg hover:bg-[#1da851] transition-colors">Demo</a>
+                    <a href="https://github.com/MarceloSenai/whatsapp-crm-zapi" target="_blank" class="flex-1 text-center px-2 py-1.5 text-[10px] border border-[#25d366] text-[#25d366] rounded-lg hover:bg-[#25d366]/5 transition-colors">GitHub</a>
                 </div>
             </div>
         </div>
 
-        @* Comparison Table *@
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Comparação Técnica</h2>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-10">
+        @* ===== COMPARISON TABLE ===== *@
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Comparacao Tecnica Detalhada</h2>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-12">
             <table class="w-full">
-                <thead><tr class="bg-gray-50 border-b border-gray-200"><th class="text-left text-xs font-medium text-gray-500 px-4 py-3">Aspecto</th><th class="text-left text-xs font-medium text-gray-500 px-4 py-3">TypeScript</th><th class="text-left text-xs font-medium text-gray-500 px-4 py-3">C#</th></tr></thead>
+                <thead><tr class="bg-gray-50 border-b border-gray-200"><th class="text-left text-xs font-medium text-gray-500 px-4 py-3">Aspecto</th><th class="text-left text-xs font-medium text-gray-500 px-4 py-3">TypeScript</th><th class="text-left text-xs font-medium text-gray-500 px-4 py-3">C# Blazor</th></tr></thead>
                 <tbody class="text-sm">
-                    <tr class="border-b border-gray-50"><td class="px-4 py-2 text-gray-500">Linguagem</td><td class="px-4 py-2">TypeScript</td><td class="px-4 py-2">C# 13</td></tr>
+                    <tr class="border-b border-gray-50"><td class="px-4 py-2 text-gray-500">Linguagem</td><td class="px-4 py-2">TypeScript 5</td><td class="px-4 py-2">C# 13</td></tr>
                     <tr class="border-b border-gray-50"><td class="px-4 py-2 text-gray-500">Runtime</td><td class="px-4 py-2">Node.js 20</td><td class="px-4 py-2">.NET 9</td></tr>
-                    <tr class="border-b border-gray-50"><td class="px-4 py-2 text-gray-500">Rendering</td><td class="px-4 py-2">RSC + Client</td><td class="px-4 py-2">Blazor Server (SignalR)</td></tr>
-                    <tr class="border-b border-gray-50"><td class="px-4 py-2 text-gray-500">ORM</td><td class="px-4 py-2">Prisma 6</td><td class="px-4 py-2">EF Core 9</td></tr>
-                    <tr class="border-b border-gray-50"><td class="px-4 py-2 text-gray-500">Polling</td><td class="px-4 py-2">setInterval</td><td class="px-4 py-2">System.Threading.Timer</td></tr>
+                    <tr class="border-b border-gray-50"><td class="px-4 py-2 text-gray-500">Framework Web</td><td class="px-4 py-2">Next.js 16 (App Router)</td><td class="px-4 py-2">ASP.NET Core 9</td></tr>
+                    <tr class="border-b border-gray-50"><td class="px-4 py-2 text-gray-500">Renderizacao UI</td><td class="px-4 py-2">React (CSR + SSR)</td><td class="px-4 py-2">Blazor Server (SignalR)</td></tr>
+                    <tr class="border-b border-gray-50"><td class="px-4 py-2 text-gray-500">ORM</td><td class="px-4 py-2">Prisma 6</td><td class="px-4 py-2">EF Core 9 + Npgsql</td></tr>
+                    <tr class="border-b border-gray-50"><td class="px-4 py-2 text-gray-500">API Style</td><td class="px-4 py-2">Next.js Route Handlers</td><td class="px-4 py-2">Minimal API</td></tr>
+                    <tr class="border-b border-gray-50"><td class="px-4 py-2 text-gray-500">Drag-and-Drop</td><td class="px-4 py-2">@("@")dnd-kit (React)</td><td class="px-4 py-2">SortableJS + IJSRuntime</td></tr>
+                    <tr class="border-b border-gray-50"><td class="px-4 py-2 text-gray-500">Polling UI</td><td class="px-4 py-2">setInterval / useEffect</td><td class="px-4 py-2">System.Timers.Timer</td></tr>
+                    <tr class="border-b border-gray-50"><td class="px-4 py-2 text-gray-500">CSS</td><td class="px-4 py-2">Tailwind 4 (build)</td><td class="px-4 py-2">Tailwind CDN</td></tr>
                     <tr class="border-b border-gray-50"><td class="px-4 py-2 text-gray-500">Auto-resposta</td><td class="px-4 py-2">setTimeout</td><td class="px-4 py-2">Task.Run + Task.Delay</td></tr>
-                    <tr class="border-b border-gray-50"><td class="px-4 py-2 text-gray-500">Campanhas</td><td class="px-4 py-2">setTimeout cascata</td><td class="px-4 py-2">BackgroundService + Channel</td></tr>
-                    <tr><td class="px-4 py-2 text-gray-500">CSS Classes</td><td class="px-4 py-2">cn() (clsx)</td><td class="px-4 py-2">String interpolation</td></tr>
+                    <tr class="border-b border-gray-50"><td class="px-4 py-2 text-gray-500">Campanhas</td><td class="px-4 py-2">setTimeout cascata</td><td class="px-4 py-2">BackgroundService + Channel&lt;T&gt;</td></tr>
+                    <tr><td class="px-4 py-2 text-gray-500">Deploy</td><td class="px-4 py-2">Docker (Render)</td><td class="px-4 py-2">Docker (Render)</td></tr>
                 </tbody>
             </table>
         </div>
 
-        @* Modules *@
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Módulos</h2>
-        <div class="grid md:grid-cols-2 gap-4 mb-10">
-            <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-200"><h3 class="font-semibold text-gray-900 mb-1">📥 Inbox</h3><p class="text-sm text-gray-500">Chat em tempo real com simulador WhatsApp. Auto-scroll, ticks de status, templates de mensagem.</p></div>
-            <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-200"><h3 class="font-semibold text-gray-900 mb-1">📊 Pipeline</h3><p class="text-sm text-gray-500">Kanban board com 6 estágios. Mover deals entre colunas. Valor total por estágio.</p></div>
-            <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-200"><h3 class="font-semibold text-gray-900 mb-1">📢 Campanhas</h3><p class="text-sm text-gray-500">Wizard 4 etapas, filtro por tags, simulação progressiva de envio com stats em tempo real.</p></div>
-            <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-200"><h3 class="font-semibold text-gray-900 mb-1">👥 Contatos</h3><p class="text-sm text-gray-500">50 contatos com busca, tags, opt-out. Contagem de conversas e deals por contato.</p></div>
-        </div>
-
-        @* Database *@
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Banco de Dados</h2>
-        <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-200 mb-10">
-            <p class="text-sm text-gray-600 mb-3">PostgreSQL (Neon) — mesmo banco compartilhado entre ambas versões.</p>
-            <div class="grid grid-cols-3 gap-3 text-sm">
-                <div class="bg-gray-50 rounded p-2 text-center"><span class="font-bold text-lg text-gray-900">50</span><br/><span class="text-xs text-gray-500">Contatos</span></div>
-                <div class="bg-gray-50 rounded p-2 text-center"><span class="font-bold text-lg text-gray-900">20</span><br/><span class="text-xs text-gray-500">Conversas</span></div>
-                <div class="bg-gray-50 rounded p-2 text-center"><span class="font-bold text-lg text-gray-900">30</span><br/><span class="text-xs text-gray-500">Deals</span></div>
-                <div class="bg-gray-50 rounded p-2 text-center"><span class="font-bold text-lg text-gray-900">6</span><br/><span class="text-xs text-gray-500">Estágios</span></div>
-                <div class="bg-gray-50 rounded p-2 text-center"><span class="font-bold text-lg text-gray-900">3</span><br/><span class="text-xs text-gray-500">Campanhas</span></div>
-                <div class="bg-gray-50 rounded p-2 text-center"><span class="font-bold text-lg text-gray-900">10</span><br/><span class="text-xs text-gray-500">Templates</span></div>
+        @* ===== ARCHITECTURE ===== *@
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Arquitetura da Aplicacao</h2>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <div class="bg-gray-900 rounded-lg p-5 font-mono text-xs leading-relaxed text-gray-300 overflow-x-auto">
+                <pre class="whitespace-pre">
+┌─────────────────────────────────────────────────────────────────────┐
+│                         Browser (Usuario)                           │
+│  Blazor Server — UI renderizada no servidor, diff via SignalR       │
+└─────────────────┬─────────────────────────────┬─────────────────────┘
+                  │ WebSocket (SignalR)          │ HTTP (fetch)
+                  ▼                              ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                     ASP.NET Core 9 (.NET 9)                         │
+│                                                                     │
+│  ┌──────────────────┐    ┌──────────────────────────────────────┐   │
+│  │  Blazor Server    │    │  Minimal API (7 endpoints)           │   │
+│  │  Components/      │    │  GET/POST /api/conversations         │   │
+│  │  ├── Pages/       │    │  GET/POST /api/messages              │   │
+│  │  ├── Shared/      │───▶│  GET/PATCH /api/pipeline             │   │
+│  │  └── Layout/      │    │  GET/POST  /api/campaigns            │   │
+│  │                    │    │  GET/PATCH /api/contacts             │   │
+│  │  IJSRuntime       │    │  GET       /api/templates            │   │
+│  │  (SortableJS,     │    │  POST      /api/reset                │   │
+│  │   scroll, etc.)   │    └──────────────────────────────────────┘   │
+│  └──────────────────┘                                                │
+│                                                                      │
+│  ┌──────────────────────────────────────────────────────────────┐   │
+│  │  Services                                                     │   │
+│  │  ├── WhatsAppSimulator — 19 regras keyword-matching           │   │
+│  │  └── CampaignRunner — BackgroundService + Channel&lt;string&gt;     │   │
+│  └──────────────────────────────────────────────────────────────┘   │
+│                                                                      │
+│  ┌──────────────────────────────────────────────────────────────┐   │
+│  │  EF Core 9 + Npgsql                                          │   │
+│  │  AppDbContext — 9 DbSets + OnModelCreating (camelCase cols)   │   │
+│  └──────────────────┬───────────────────────────────────────────┘   │
+└──────────────────────┼──────────────────────────────────────────────┘
+                       │ TCP/SSL
+                       ▼
+              ┌──────────────────┐
+              │  Neon PostgreSQL  │
+              │  (compartilhado)  │
+              │  9 tabelas        │
+              └──────────────────┘</pre>
             </div>
         </div>
 
-        @* Architecture *@
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Arquitetura</h2>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-10">
-            <div class="space-y-3 text-sm text-gray-600">
-                <div class="flex items-start gap-3"><span class="font-mono text-xs bg-gray-100 px-2 py-1 rounded text-gray-700 flex-shrink-0">Entities/</span><span>9 modelos EF Core (Contact, Conversation, Message, Deal, Stage, Pipeline, Campaign, CampaignMessage, Template)</span></div>
-                <div class="flex items-start gap-3"><span class="font-mono text-xs bg-gray-100 px-2 py-1 rounded text-gray-700 flex-shrink-0">Services/</span><span>WhatsAppSimulator (19 regras + 7 fallbacks), CampaignRunner (BackgroundService + Channel)</span></div>
-                <div class="flex items-start gap-3"><span class="font-mono text-xs bg-gray-100 px-2 py-1 rounded text-gray-700 flex-shrink-0">Api/</span><span>7 Minimal APIs: conversations, messages, pipeline, campaigns, contacts, templates, reset</span></div>
-                <div class="flex items-start gap-3"><span class="font-mono text-xs bg-gray-100 px-2 py-1 rounded text-gray-700 flex-shrink-0">Components/</span><span>Blazor Server: Layout (Sidebar, NavItem), Pages (7), Shared (11 componentes reutilizáveis)</span></div>
+        @* ===== PROJECT STRUCTURE ===== *@
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Estrutura do Projeto</h2>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <div class="bg-gray-900 rounded-lg p-5 font-mono text-xs leading-relaxed text-gray-300 overflow-x-auto">
+                <pre class="whitespace-pre">
+src/WhatsAppCrm.Web/
+├── Program.cs                  <span class="text-gray-500">// Bootstrap: DI, EF, APIs, Blazor, CampaignRunner</span>
+├── Data/
+│   ├── AppDbContext.cs          <span class="text-gray-500">// 9 DbSets, OnModelCreating com FKs + camelCase mapping</span>
+│   └── DatabaseSeeder.cs        <span class="text-gray-500">// Seed: 50 contatos, 20 conversas, 200 msgs, pipeline, deals</span>
+├── Entities/                    <span class="text-gray-500">// 9 POCOs: Contact, Conversation, Message, Pipeline, Stage,</span>
+│                                <span class="text-gray-500">//          Deal, Campaign, CampaignMessage, Template</span>
+├── Services/
+│   ├── WhatsAppSimulator.cs     <span class="text-gray-500">// 19 regras keyword-matching + 7 fallbacks</span>
+│   └── CampaignRunner.cs        <span class="text-gray-500">// BackgroundService com Channel&lt;string&gt; para fila</span>
+├── Api/
+│   ├── ConversationsApi.cs      <span class="text-gray-500">// GET /api/conversations + /api/conversations/{"{id}"}</span>
+│   ├── MessagesApi.cs           <span class="text-gray-500">// GET + POST (auto-resposta via Task.Run + IServiceScopeFactory)</span>
+│   ├── PipelineApi.cs           <span class="text-gray-500">// GET + PATCH /api/pipeline</span>
+│   ├── CampaignsApi.cs          <span class="text-gray-500">// GET + POST + POST /{"{id}"}/start</span>
+│   ├── ContactsApi.cs           <span class="text-gray-500">// GET + PATCH /api/contacts</span>
+│   ├── TemplatesApi.cs          <span class="text-gray-500">// GET /api/templates</span>
+│   └── ResetApi.cs              <span class="text-gray-500">// POST /api/reset (delete all + re-seed)</span>
+├── Components/
+│   ├── Pages/                   <span class="text-gray-500">// Inbox, Pipeline, Campaigns, NewCampaign, Contacts, About</span>
+│   ├── Shared/                  <span class="text-gray-500">// ConversationList, ChatPanel, MessageBubble, MessageInput,</span>
+│   │                            <span class="text-gray-500">// ContactInfo, KanbanBoard, KanbanColumn, DealCard, etc.</span>
+│   └── Layout/                  <span class="text-gray-500">// MainLayout + Sidebar</span>
+├── Helpers/Formatters.cs        <span class="text-gray-500">// FormatCurrency, FormatPhone, TimeAgo, ParseTags</span>
+└── wwwroot/js/
+    ├── app.js                   <span class="text-gray-500">// scrollToBottom, autoResizeTextarea, focusElement</span>
+    └── pipeline-interop.js      <span class="text-gray-500">// SortableJS init + DotNet callback para drag-and-drop</span></pre>
             </div>
         </div>
 
-        <div class="text-center text-sm text-gray-400 pb-8">
-            <p>Desenvolvido com ASP.NET Core 9 + Blazor Server + EF Core 9</p>
-            <p class="mt-1">Dados de demonstração — contexto Obraxs ERP para Construção Civil</p>
+        @* ===== DATABASE SCHEMA ===== *@
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Schema do Banco (PostgreSQL — Neon)</h2>
+        <p class="text-sm text-gray-500 mb-4">Banco Neon compartilhado entre as versoes. Tabelas criadas pelo Prisma (camelCase). EF Core mapeia via <code class="bg-gray-100 px-1 rounded text-xs">OnModelCreating</code>.</p>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <div class="bg-gray-900 rounded-lg p-5 font-mono text-xs leading-relaxed text-gray-300 overflow-x-auto">
+                <pre class="whitespace-pre">
+<span class="text-blue-300">Contact</span>          <span class="text-gray-500">-- 50 seed. Telefone UNIQUE. Tags em JSON string (text)</span>
+  id (PK), name, phone (UNIQUE), email?, avatarUrl?, tags, optedOut, optOutAt?, createdAt, updatedAt
+
+<span class="text-blue-300">Conversation</span>     <span class="text-gray-500">-- 20 seed. Status: open | waiting | closed</span>
+  id (PK), contactId (FK), status, assignedTo?, channel, lastMessageAt?, unreadCount, createdAt
+
+<span class="text-blue-300">Message</span>          <span class="text-gray-500">-- ~200 seed. Direction: inbound | outbound. Status: sent→delivered→read</span>
+  id (PK), conversationId (FK), direction, type, content, status, metadata?, createdAt
+
+<span class="text-blue-300">Pipeline</span>         <span class="text-gray-500">-- 1 pipeline "Vendas Obraxs"</span>
+  id (PK), name
+
+<span class="text-blue-300">Stage</span>            <span class="text-gray-500">-- 6 estagios: Prospeccao → Qualificacao → Proposta → Negociacao → Fechamento → Pos-Venda</span>
+  id (PK), pipelineId (FK), name, order, color
+
+<span class="text-blue-300">Deal</span>             <span class="text-gray-500">-- ~15 seed. Value em double precision (R$)</span>
+  id (PK), contactId (FK), stageId (FK), value, title, notes?, createdAt, updatedAt
+
+<span class="text-blue-300">Campaign</span>         <span class="text-gray-500">-- Status: draft → running → completed</span>
+  id (PK), name, templateText, status, audienceFilter?, rateLimit, scheduledAt?, startedAt?, completedAt?, createdAt
+
+<span class="text-blue-300">CampaignMessage</span>  <span class="text-gray-500">-- Status: pending → sent → delivered → read → replied | failed</span>
+  id (PK), campaignId (FK), contactId (FK), status, sentAt?, deliveredAt?, readAt?, repliedAt?
+
+<span class="text-blue-300">Template</span>         <span class="text-gray-500">-- Templates de mensagem com variaveis</span>
+  id (PK), name, category, content, status, variables?</pre>
+            </div>
+        </div>
+
+        @* ===== KEY PATTERNS ===== *@
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Padroes Tecnicos Importantes</h2>
+        <div class="space-y-4 mb-12">
+            @foreach (var pattern in _patterns)
+            {
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-xs font-bold px-2 py-0.5 rounded @pattern.BadgeColor text-white">@pattern.Badge</span>
+                        <h3 class="font-semibold text-gray-900 text-sm">@pattern.Title</h3>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-3">@pattern.Description</p>
+                    @if (!string.IsNullOrEmpty(pattern.Code))
+                    {
+                        <div class="bg-gray-900 rounded-lg p-4 font-mono text-xs leading-relaxed text-gray-300 overflow-x-auto">
+                            <pre class="whitespace-pre">@pattern.Code</pre>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        @* ===== MODULES ===== *@
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Modulos em Detalhe</h2>
+        <div class="space-y-4 mb-12">
+            @foreach (var mod in _modules)
+            {
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                    <h3 class="font-semibold text-gray-900 mb-2">@mod.Name</h3>
+                    <p class="text-sm text-gray-600 mb-3">@mod.Description</p>
+                    <div class="grid md:grid-cols-2 gap-3">
+                        @foreach (var detail in mod.Details)
+                        {
+                            <div class="flex items-start gap-2 text-sm">
+                                <span class="mt-0.5 h-2 w-2 flex-shrink-0 rounded-full bg-[#512bd4]"></span>
+                                <span class="text-gray-600">@detail</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        @* ===== FOOTER ===== *@
+        <div class="text-center text-sm text-gray-400 pb-8 border-t border-gray-200 pt-6">
+            <p>ASP.NET Core 9 + Blazor Server + EF Core 9</p>
+            <p class="mt-1">Dados de demonstracao — contexto Obraxs ERP para Construcao Civil</p>
+            <p class="mt-1">Banco PostgreSQL compartilhado (Neon) entre as versoes</p>
         </div>
     </div>
 </div>
+
+@code {
+    private record TechPattern(string Badge, string BadgeColor, string Title, string Description, string? Code);
+    private record Module(string Name, string Description, string[] Details);
+
+    private readonly TechPattern[] _patterns =
+    [
+        new("EF Core", "bg-[#512bd4]",
+            "Naming Convention — Prisma (camelCase) → EF Core (PascalCase)",
+            "O banco foi criado pelo Prisma com colunas camelCase (contactId, lastMessageAt). EF Core por padrao gera PascalCase. O mapeamento e feito no OnModelCreating com um loop que converte entity names e column names.",
+            @"// AppDbContext.cs — OnModelCreating
+foreach (var entity in modelBuilder.Model.GetEntityTypes())
+{
+    // Tabela = nome da classe (singular): Contact, Conversation, Message...
+    entity.SetTableName(entity.ClrType.Name);
+
+    // Coluna = camelCase: ContactId → contactId, LastMessageAt → lastMessageAt
+    foreach (var property in entity.GetProperties())
+    {
+        var name = property.Name;
+        property.SetColumnName(char.ToLowerInvariant(name[0]) + name[1..]);
+    }
+}"),
+
+        new("Blazor", "bg-blue-600",
+            "Polling com Change Detection — Evitando re-renders desnecessarios",
+            "Componentes usam System.Timers.Timer para polling periodico. Um hash dos dados (Count + campos-chave) evita chamadas a StateHasChanged quando nada mudou. Guard _isPolling previne sobreposicao de requests.",
+            @"// ConversationList.razor — Polling pattern
+private bool _isPolling;
+private int _lastDataHash;
+
+private async void OnTimerElapsed(object? sender, ElapsedEventArgs e)
+{
+    if (_isPolling) return;  // Guard: skip se request anterior ainda em andamento
+    _isPolling = true;
+    try
+    {
+        var data = await Http.GetFromJsonAsync<List<ConversationDto>>(""/api/conversations"");
+        var hash = ComputeHash(data);  // Count + Status + UnreadCount + LastMessage
+        if (hash != _lastDataHash)
+        {
+            _lastDataHash = hash;
+            await InvokeAsync(StateHasChanged);  // Só re-renderiza se dados mudaram
+        }
+    }
+    finally { _isPolling = false; }
+}"),
+
+        new("JS Interop", "bg-amber-600",
+            "SortableJS Drag-and-Drop via IJSRuntime + DotNetObjectReference",
+            "O pipeline Kanban usa SortableJS (lib JS) para drag-and-drop. A comunicacao JS → C# usa DotNetObjectReference com [JSInvokable]. O JS chama dotNetHelper.invokeMethodAsync('OnDealMoved', dealId, stageId) apos o drop.",
+            @"// KanbanBoard.razor — JS Interop lifecycle
+protected override async Task OnAfterRenderAsync(bool firstRender)
+{
+    if (!_sortableInitialized && pipeline?.Stages?.Count > 0)
+    {
+        _dotNetRef ??= DotNetObjectReference.Create(this);
+        await JS.InvokeVoidAsync(""initSortable"", _dotNetRef);
+        _sortableInitialized = true;
+    }
+}
+
+[JSInvokable]
+public async Task OnDealMoved(string dealId, string stageId)
+{
+    await Http.PatchAsJsonAsync(""/api/pipeline"", new { dealId, stageId });
+    await LoadPipeline();          // Recarrega dados
+    _sortableInitialized = false;  // Reinicializa SortableJS no proximo render
+    await InvokeAsync(StateHasChanged);
+}"),
+
+        new("API", "bg-green-600",
+            "Minimal API — Endpoints REST consumidos pelos componentes Blazor",
+            "Os componentes Blazor fazem HTTP requests para Minimal APIs no mesmo servidor. Usa HttpClient registrado com BaseAddress no DI. Todas as queries read-only usam .AsNoTracking() para reduzir overhead do change tracker.",
+            @"// Program.cs — Registro dos endpoints
+app.MapConversationsApi();   // GET /api/conversations + GET /api/conversations/{id}
+app.MapMessagesApi();        // GET /api/messages?conversationId=X + POST /api/messages
+app.MapPipelineApi();        // GET /api/pipeline + PATCH /api/pipeline
+app.MapCampaignsApi();       // GET + POST /api/campaigns + POST /api/campaigns/{id}/start
+app.MapContactsApi();        // GET + PATCH /api/contacts
+app.MapTemplatesApi();       // GET /api/templates
+app.MapResetApi();           // POST /api/reset"),
+
+        new("Simulador", "bg-orange-600",
+            "WhatsAppSimulator — 19 Regras de Keyword Matching + Auto-resposta com Delay",
+            "O simulador gera respostas inteligentes baseadas em keywords na mensagem do usuario (orcamento, preco, prazo, etc.). A auto-resposta usa Task.Run para nao bloquear o request HTTP, com IServiceScopeFactory para acessar o DbContext em background.",
+            @"// MessagesApi.cs — Auto-resposta em background
+_ = Task.Run(async () => {
+    await Task.Delay(Random.Shared.Next(2000, 5000));
+    using var scope = scopeFactory.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    // Simula progressao de status: sent → delivered → read
+    msg.Status = ""delivered"";
+    await db.SaveChangesAsync();
+    await Task.Delay(1500);
+    msg.Status = ""read"";
+    await db.SaveChangesAsync();
+
+    // Gera resposta contextual
+    var reply = WhatsAppSimulator.GenerateReply(request.Content, contact.Name);
+    db.Messages.Add(new Message { Direction = ""inbound"", Content = reply, ... });
+    await db.SaveChangesAsync();
+});"),
+
+        new("Background", "bg-red-600",
+            "CampaignRunner — BackgroundService com Channel<T> para processamento async",
+            "Campanhas sao processadas em background usando um BackgroundService que consome IDs de campanha de um Channel<string>. Cada mensagem e enviada com rate limiting (delay configuravel) e status tracking progressivo.",
+            null)
+    ];
+
+    private readonly Module[] _modules =
+    [
+        new("Inbox (3 colunas)",
+            "Modulo mais complexo. Layout de 3 colunas: lista de conversas | chat | info do contato. WhatsApp simulado com respostas automaticas.",
+            [
+                "ConversationList: polling 5s, search, tabs (Todos/Abertos/Aguardando/Fechados), avatar placeholder",
+                "ChatPanel: polling 5s com endpoint dedicado /api/conversations/{id}, auto-scroll via JS interop",
+                "MessageBubble: outbound bg-[#dcf8c6] (verde), inbound branco. Ticks: ✓ sent, ✓✓ delivered, ✓✓ azul read",
+                "MessageInput: textarea auto-resize via JS, Enter envia, Shift+Enter nova linha, template picker dropdown",
+                "ContactInfo: painel colapsivel com dados do contato, tags, deals, conversas anteriores",
+                "Guard _isPolling para prevenir requests sobrepostos + hash-based change detection"
+            ]),
+        new("Pipeline (Kanban)",
+            "Board Kanban com 6 estagios de venda. Drag-and-drop via SortableJS para mover deals entre colunas.",
+            [
+                "KanbanBoard: orquestrador — carrega pipeline via GET /api/pipeline, gerencia JS interop",
+                "KanbanColumn: coluna com header (nome, count, valor total) + container sortable com data-stage-id",
+                "DealCard: card com titulo, contato, valor, tags coloridas, icone de drag (GripVertical)",
+                "SortableJS: grupo 'pipeline', animacao 200ms, ghost/chosen/drag classes customizadas",
+                "pipeline-interop.js: initSortable(dotNetRef) + destroySortable() + callback OnDealMoved",
+                "Optimistic update: DOM move instantaneo, API call em background, reload para sync"
+            ]),
+        new("Campanhas",
+            "Envio simulado em massa. Cria campanha, seleciona audiencia por tags, dispara com rate limiting simulado.",
+            [
+                "CampaignList: tabela com stats (Total/Pending/Sent/Delivered/Read/Replied/Failed), polling 10s",
+                "NewCampaign (wizard 4 etapas): Nome → Template → Audiencia (filtro por tags) → Confirmar",
+                "CampaignRunner: BackgroundService que consome Channel<string>, delay por mensagem = 60s/rateLimit",
+                "Filtro de audiencia: JSON tags no campo audienceFilter, contatos optedOut excluidos",
+                "Simulacao progressiva: pending → sent → delivered → read (com delays aleatorios)",
+                "Hash-based change detection no polling para evitar re-renders sem mudanca"
+            ]),
+        new("Contatos",
+            "Tabela de 50 contatos seed com busca, filtros por status e toggle de opt-out.",
+            [
+                "Search por nome ou telefone com debounce",
+                "Tabs: Todos / Ativos / Opted-out",
+                "Toggle opt-out com PATCH /api/contacts/{id}",
+                "Tags coloridas por categoria (VIP=amber, Lead=blue, Cliente=green, etc.)",
+                "FormatPhone: exibe +55 (11) 99999-9999 a partir do formato E.164",
+                "50 contatos seed com dados contextualizados (construtoras, locadoras, etc.)"
+            ])
+    ];
+}

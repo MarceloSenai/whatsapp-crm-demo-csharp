@@ -88,6 +88,8 @@ else
     private string _status = "";
     private Timer? _pollTimer;
     private string? _lastConversationId;
+    private int _lastMessageCount;
+    private bool _isPolling;
 
     private string StatusLabel => _status switch
     {
@@ -111,10 +113,12 @@ else
         {
             _lastConversationId = ConversationId;
             _messages = null;
+            _lastMessageCount = 0;
             if (!string.IsNullOrEmpty(ConversationId))
             {
                 await LoadMessages();
-                await LoadConversationInfo();
+                // Load contact info in background (non-blocking)
+                _ = LoadConversationInfo();
                 StartPolling();
             }
         }
@@ -125,32 +129,32 @@ else
         _pollTimer?.Dispose();
         _pollTimer = new Timer(async _ =>
         {
-            if (!string.IsNullOrEmpty(ConversationId))
+            if (_isPolling || string.IsNullOrEmpty(ConversationId)) return;
+            _isPolling = true;
+            try
             {
+                var prevCount = _lastMessageCount;
                 await LoadMessages();
-                await InvokeAsync(StateHasChanged);
-                try { await JS.InvokeVoidAsync("scrollToBottom", "messages-container"); } catch { }
+                // Only re-render + scroll if message count changed
+                if (_lastMessageCount != prevCount)
+                {
+                    await InvokeAsync(StateHasChanged);
+                    try { await JS.InvokeVoidAsync("scrollToBottom", "messages-container"); } catch { }
+                }
             }
-        }, null, 2000, 2000);
+            finally { _isPolling = false; }
+        }, null, 5000, 5000);
     }
 
     private async Task LoadMessages()
     {
         try
         {
-            var data = await Http.GetFromJsonAsync<JsonElement>($"/api/messages?conversationId={ConversationId}");
-            _messages = [];
-
-            foreach (var item in data.EnumerateArray())
+            var data = await Http.GetFromJsonAsync<List<MessageItem>>($"/api/messages?conversationId={ConversationId}");
+            if (data != null)
             {
-                _messages.Add(new MessageItem
-                {
-                    Id = item.GetProperty("id").GetString()!,
-                    Direction = item.GetProperty("direction").GetString()!,
-                    Content = item.GetProperty("content").GetString()!,
-                    Status = item.GetProperty("status").GetString()!,
-                    CreatedAt = item.GetProperty("createdAt").GetDateTime()
-                });
+                _messages = data;
+                _lastMessageCount = data.Count;
             }
         }
         catch { /* ignore polling errors */ }
@@ -160,16 +164,14 @@ else
     {
         try
         {
-            var data = await Http.GetFromJsonAsync<JsonElement>("/api/conversations");
-            foreach (var item in data.EnumerateArray())
+            // Dedicated endpoint — NOT fetching all conversations
+            var data = await Http.GetFromJsonAsync<ConversationInfoDto>($"/api/conversations/{ConversationId}");
+            if (data != null)
             {
-                if (item.GetProperty("id").GetString() == ConversationId)
-                {
-                    _contactName = item.GetProperty("contact").GetProperty("name").GetString()!;
-                    _contactPhone = item.GetProperty("contact").GetProperty("phone").GetString()!;
-                    _status = item.GetProperty("status").GetString()!;
-                    break;
-                }
+                _contactName = data.Contact?.Name ?? "";
+                _contactPhone = data.Contact?.Phone ?? "";
+                _status = data.Status ?? "";
+                await InvokeAsync(StateHasChanged);
             }
         }
         catch { /* ignore */ }
@@ -200,5 +202,18 @@ else
         public string Content { get; set; } = "";
         public string Status { get; set; } = "";
         public DateTime CreatedAt { get; set; }
+    }
+
+    private class ConversationInfoDto
+    {
+        public string Id { get; set; } = "";
+        public string Status { get; set; } = "";
+        public ContactInfoDto? Contact { get; set; }
+    }
+
+    private class ContactInfoDto
+    {
+        public string Name { get; set; } = "";
+        public string Phone { get; set; } = "";
     }
 }

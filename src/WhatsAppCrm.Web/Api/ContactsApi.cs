@@ -12,6 +12,7 @@ public static class ContactsApi
         app.MapGet("/api/contacts", async (AppDbContext db) =>
         {
             var contacts = await db.Contacts
+                .AsNoTracking()
                 .OrderByDescending(c => c.CreatedAt)
                 .Select(c => new
                 {

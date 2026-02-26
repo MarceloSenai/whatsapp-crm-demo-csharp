@@ -17,6 +17,7 @@ public static class MessagesApi
                 return Results.BadRequest(new { error = "conversationId required" });
 
             var messages = await db.Messages
+                .AsNoTracking()
                 .Where(m => m.ConversationId == conversationId)
                 .OrderBy(m => m.CreatedAt)
                 .ToListAsync();

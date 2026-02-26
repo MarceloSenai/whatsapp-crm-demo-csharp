@@ -10,6 +10,7 @@ public static class ConversationsApi
         app.MapGet("/api/conversations", async (AppDbContext db) =>
         {
             var conversations = await db.Conversations
+                .AsNoTracking()
                 .Include(c => c.Contact)
                 .Include(c => c.Messages.OrderByDescending(m => m.CreatedAt).Take(1))
                 .OrderByDescending(c => c.LastMessageAt)
@@ -42,6 +43,30 @@ public static class ConversationsApi
                 .ToListAsync();
 
             return Results.Ok(conversations);
+        });
+
+        app.MapGet("/api/conversations/{id}", async (string id, AppDbContext db) =>
+        {
+            var conversation = await db.Conversations
+                .AsNoTracking()
+                .Include(c => c.Contact)
+                .Where(c => c.Id == id)
+                .Select(c => new
+                {
+                    c.Id,
+                    c.Status,
+                    Contact = new
+                    {
+                        c.Contact.Name,
+                        c.Contact.Phone
+                    }
+                })
+                .FirstOrDefaultAsync();
+
+            if (conversation == null)
+                return Results.NotFound();
+
+            return Results.Ok(conversation);
         });
 
         return app;

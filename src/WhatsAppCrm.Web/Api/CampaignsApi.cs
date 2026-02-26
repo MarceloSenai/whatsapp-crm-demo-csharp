@@ -15,6 +15,7 @@ public static class CampaignsApi
         app.MapGet("/api/campaigns", async (AppDbContext db) =>
         {
             var campaigns = await db.Campaigns
+                .AsNoTracking()
                 .Include(c => c.Messages)
                 .OrderByDescending(c => c.CreatedAt)
                 .ToListAsync();

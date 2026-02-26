@@ -10,6 +10,7 @@ public static class TemplatesApi
         app.MapGet("/api/templates", async (AppDbContext db) =>
         {
             var templates = await db.Templates
+                .AsNoTracking()
                 .Where(t => t.Status == "approved")
                 .OrderBy(t => t.Name)
                 .ToListAsync();

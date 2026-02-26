@@ -12,6 +12,7 @@ public static class PipelineApi
         app.MapGet("/api/pipeline", async (AppDbContext db) =>
         {
             var pipeline = await db.Pipelines
+                .AsNoTracking()
                 .Select(p => new
                 {
                     p.Id,

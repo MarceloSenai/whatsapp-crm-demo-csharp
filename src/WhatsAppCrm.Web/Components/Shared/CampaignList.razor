@@ -95,20 +95,48 @@ else
     private List<CampaignDto>? campaigns;
     private Timer? pollTimer;
     private bool _starting;
+    private bool _isPolling;
+    private int _lastDataHash;
 
     protected override async Task OnInitializedAsync()
     {
         await LoadCampaigns();
         pollTimer = new Timer(async _ =>
         {
-            await LoadCampaigns();
-            await InvokeAsync(StateHasChanged);
-        }, null, 5000, 5000);
+            if (_isPolling) return;
+            _isPolling = true;
+            try
+            {
+                var prevHash = _lastDataHash;
+                await LoadCampaigns();
+                if (_lastDataHash != prevHash)
+                    await InvokeAsync(StateHasChanged);
+            }
+            finally { _isPolling = false; }
+        }, null, 10000, 10000);
     }
 
     private async Task LoadCampaigns()
     {
-        try { campaigns = await Http.GetFromJsonAsync<List<CampaignDto>>("/api/campaigns"); }
+        try
+        {
+            var data = await Http.GetFromJsonAsync<List<CampaignDto>>("/api/campaigns");
+            if (data != null)
+            {
+                campaigns = data;
+                var hash = new HashCode();
+                hash.Add(data.Count);
+                foreach (var c in data)
+                {
+                    hash.Add(c.Status);
+                    hash.Add(c.Stats?.Sent ?? 0);
+                    hash.Add(c.Stats?.Delivered ?? 0);
+                    hash.Add(c.Stats?.Read ?? 0);
+                    hash.Add(c.Stats?.Replied ?? 0);
+                }
+                _lastDataHash = hash.ToHashCode();
+            }
+        }
         catch { /* ignore polling errors */ }
     }
 

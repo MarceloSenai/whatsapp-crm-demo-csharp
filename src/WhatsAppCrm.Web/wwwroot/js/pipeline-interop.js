@@ -6,11 +6,24 @@
  * @param {DotNetObjectReference} dotNetHelper — Blazor component reference for callbacks
  */
 window.initSortable = (dotNetHelper) => {
+    if (typeof Sortable === 'undefined') {
+        console.error('[Pipeline] SortableJS not loaded — drag-and-drop disabled.');
+        throw new Error('SortableJS not available');
+    }
+
     // Clean up any previous instances
     window.destroySortable();
 
     const columns = document.querySelectorAll('.kanban-sortable');
+    if (columns.length === 0) {
+        console.warn('[Pipeline] No .kanban-sortable columns found in DOM.');
+        throw new Error('No kanban columns found');
+    }
+
+    console.log(`[Pipeline] Initializing SortableJS on ${columns.length} column(s).`);
+
     columns.forEach(column => {
+        const stageId = column.dataset.stageId;
         column._sortable = new Sortable(column, {
             group: 'pipeline',          // Allow dragging between all columns
             animation: 200,             // Smooth animation duration (ms)
@@ -24,12 +37,22 @@ window.initSortable = (dotNetHelper) => {
             fallbackOnBody: true,       // Append ghost to body for better z-index
             swapThreshold: 0.65,        // Threshold for swapping position
 
+            // Exclude the empty-state hint div from being draggable
+            filter: '.kanban-empty-hint',
+            preventOnFilter: false,
+
             onEnd: async (evt) => {
                 const dealId = evt.item.dataset.dealId;
                 const newStageId = evt.to.dataset.stageId;
                 const oldStageId = evt.from.dataset.stageId;
 
+                if (!dealId) {
+                    // Dragged the empty-hint div — ignore
+                    return;
+                }
+
                 if (dealId && newStageId && newStageId !== oldStageId) {
+                    console.log(`[Pipeline] Moving deal ${dealId} → stage ${newStageId}`);
                     try {
                         await dotNetHelper.invokeMethodAsync('OnDealMoved', dealId, newStageId);
                     } catch (err) {
@@ -42,6 +65,7 @@ window.initSortable = (dotNetHelper) => {
                 }
             }
         });
+        console.log(`[Pipeline] Column stage=${stageId} ready.`);
     });
 };
 

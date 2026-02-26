@@ -29,6 +29,8 @@ else
     private bool loading = true;
     private DotNetObjectReference<KanbanBoard>? _dotNetRef;
     private bool _sortableInitialized;
+    private int _initRetries = 0;
+    private const int MaxInitRetries = 8;
 
     protected override async Task OnInitializedAsync()
     {
@@ -37,16 +39,34 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!_sortableInitialized && pipeline?.Stages != null && pipeline.Stages.Count > 0)
+        if (!_sortableInitialized && pipeline?.Stages != null && pipeline.Stages.Count > 0
+            && _initRetries < MaxInitRetries)
         {
             _dotNetRef ??= DotNetObjectReference.Create(this);
             try
             {
                 await JS.InvokeVoidAsync("initSortable", _dotNetRef);
                 _sortableInitialized = true;
+                _initRetries = 0; // reset on success
             }
-            catch { /* SSR or prerender — ignore */ }
+            catch (InvalidOperationException)
+            {
+                // Expected during SSR prerender — Blazor will call OnAfterRenderAsync again
+                // after the interactive circuit connects, no action needed.
+            }
+            catch
+            {
+                // Script may not be ready yet (race with CDN) — schedule a retry render
+                _initRetries++;
+                _ = RetryInitAsync();
+            }
         }
+    }
+
+    private async Task RetryInitAsync()
+    {
+        await Task.Delay(250);
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task LoadPipeline()

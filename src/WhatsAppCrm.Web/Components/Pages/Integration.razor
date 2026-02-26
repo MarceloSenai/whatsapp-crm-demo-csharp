@@ -1,0 +1,423 @@
+@page "/integration"
+
+<div class="h-full overflow-auto bg-gray-50">
+    <div class="max-w-4xl mx-auto p-8">
+        @* Header *@
+        <div class="mb-2 flex items-center gap-2 text-sm font-medium text-whatsapp">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/></svg>
+            Guia de Integração
+        </div>
+        <h1 class="text-3xl font-bold text-gray-900 mb-3">WhatsApp Business API + ERP CodeCycle</h1>
+        <p class="text-lg text-gray-600 mb-10">
+            Guia completo para os desenvolvedores da CodeCycle adaptarem este demo em uma integração real
+            com a WhatsApp Business Platform (Cloud API) no ERP Obraxs.
+        </p>
+
+        @* ===== PARTE 1 ===== *@
+        <div class="rounded-lg bg-[#25d366]/10 p-4 mb-6">
+            <h2 class="text-lg font-bold text-whatsapp">Parte 1 — WhatsApp Business API na Prática</h2>
+            <p class="text-sm text-gray-600">O que é, como funciona, custos e requisitos para usar WhatsApp de verdade.</p>
+        </div>
+
+        @* O que é *@
+        <h2 class="text-xl font-bold text-gray-900 mb-4">O que é a WhatsApp Cloud API?</h2>
+        <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm mb-8">
+            <p class="text-sm text-gray-600 mb-4">
+                A <strong>WhatsApp Cloud API</strong> é a API oficial da Meta para enviar e receber mensagens WhatsApp
+                de forma programática. Desde outubro de 2025, é a única opção suportada (a API On-Premises foi descontinuada).
+            </p>
+            <div class="grid md:grid-cols-3 gap-3">
+                <div class="rounded-lg bg-gray-50 p-3">
+                    <div class="text-sm font-medium text-gray-900">100% Cloud</div>
+                    <div class="text-xs text-gray-500">Infraestrutura hospedada pela Meta. Zero servidores para manter.</div>
+                </div>
+                <div class="rounded-lg bg-gray-50 p-3">
+                    <div class="text-sm font-medium text-gray-900">500 msg/s</div>
+                    <div class="text-xs text-gray-500">Capacidade de até 500 mensagens por segundo sem configuração extra.</div>
+                </div>
+                <div class="rounded-lg bg-gray-50 p-3">
+                    <div class="text-sm font-medium text-gray-900">Graph API v21.0</div>
+                    <div class="text-xs text-gray-500">API REST padrão Meta. Mesma infra do Facebook/Instagram.</div>
+                </div>
+            </div>
+        </div>
+
+        @* Pré-requisitos *@
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Pré-requisitos</h2>
+        <div class="space-y-3 mb-8">
+            @foreach (var req in _prerequisites)
+            {
+                <div class="flex gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                    <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#25d366]/10">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#25d366" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-900">@req.Title <span class="rounded-full bg-red-100 px-1.5 py-0.5 text-[10px] font-medium text-red-600 ml-1">Obrigatório</span></h3>
+                        <p class="text-sm text-gray-600 mt-1">@req.Desc</p>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @* Passo a Passo *@
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Passo a Passo — Configuração</h2>
+        <div class="space-y-4 mb-8">
+            @foreach (var step in _steps)
+            {
+                <div class="flex gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                    <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-whatsapp text-sm font-bold text-white">
+                        @step.Number
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-gray-900">@step.Title</h3>
+                        <p class="text-sm text-gray-600 mt-1">@step.Detail</p>
+                        @if (!string.IsNullOrEmpty(step.Link))
+                        {
+                            <a href="@step.Link" target="_blank" class="mt-2 inline-flex items-center gap-1 text-xs font-medium text-whatsapp hover:underline">@step.Link</a>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        @* Conceitos Importantes *@
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Conceitos Importantes</h2>
+        <div class="space-y-4 mb-8">
+            <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                <h3 class="mb-2 font-semibold text-gray-900">Janela de 24 horas</h3>
+                <p class="text-sm text-gray-600">
+                    Quando um cliente envia uma mensagem, abre-se uma <strong>janela de 24 horas</strong> na qual
+                    a empresa pode responder livremente. Após 24h sem interação do cliente, só é possível enviar
+                    <strong>templates pré-aprovados</strong>.
+                </p>
+                <div class="mt-3 rounded-lg bg-amber-50 p-3 text-xs text-amber-800">
+                    <strong>Exceção:</strong> Se o cliente veio de um anúncio Click-to-WhatsApp, a janela é de 72 horas.
+                </div>
+            </div>
+
+            <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                <h3 class="mb-2 font-semibold text-gray-900">Templates de Mensagem</h3>
+                <p class="text-sm text-gray-600 mb-3">Templates são mensagens pré-aprovadas pela Meta. Existem 4 categorias:</p>
+                <div class="grid md:grid-cols-2 gap-2">
+                    <div class="rounded-lg border border-green-200 bg-green-50 p-2 text-xs"><span class="font-semibold text-green-700">Marketing</span> — Promoções, ofertas, newsletters</div>
+                    <div class="rounded-lg border border-blue-200 bg-blue-50 p-2 text-xs"><span class="font-semibold text-blue-700">Utility</span> — Pedidos, faturas, atualizações de conta</div>
+                    <div class="rounded-lg border border-purple-200 bg-purple-50 p-2 text-xs"><span class="font-semibold text-purple-700">Authentication</span> — Códigos OTP, verificação 2FA</div>
+                    <div class="rounded-lg border border-gray-300 bg-gray-100 p-2 text-xs"><span class="font-semibold text-gray-700">Service</span> — Respostas a perguntas do cliente (grátis)</div>
+                </div>
+            </div>
+
+            <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                <h3 class="mb-2 font-semibold text-gray-900">Opt-in Obrigatório</h3>
+                <p class="text-sm text-gray-600">
+                    A empresa <strong>deve obter consentimento explícito</strong> do usuário antes de enviar mensagens.
+                    O opt-in pode ser coletado via formulário, ligação, email ou presencialmente.
+                </p>
+            </div>
+
+            <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                <h3 class="mb-2 font-semibold text-gray-900">Limites de Envio</h3>
+                <div class="grid grid-cols-4 gap-2 mt-2">
+                    <div class="rounded-lg bg-gray-50 p-2 text-center text-xs"><div class="font-bold text-gray-900">Tier 1</div><div class="text-gray-500">1.000/dia</div></div>
+                    <div class="rounded-lg bg-gray-50 p-2 text-center text-xs"><div class="font-bold text-gray-900">Tier 2</div><div class="text-gray-500">10.000/dia</div></div>
+                    <div class="rounded-lg bg-gray-50 p-2 text-center text-xs"><div class="font-bold text-gray-900">Tier 3</div><div class="text-gray-500">100.000/dia</div></div>
+                    <div class="rounded-lg bg-gray-50 p-2 text-center text-xs"><div class="font-bold text-gray-900">Ilimitado</div><div class="text-gray-500">Sem limite</div></div>
+                </div>
+            </div>
+        </div>
+
+        @* Preços *@
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Modelo de Preços (2025/2026)</h2>
+        <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm mb-8">
+            <p class="text-sm text-gray-600 mb-4">Desde julho de 2025, a cobrança é <strong>por template enviado</strong> (não mais por conversa).</p>
+            <table class="w-full text-sm">
+                <thead><tr class="border-b border-gray-200 bg-gray-50"><th class="text-left px-4 py-2 text-xs font-medium text-gray-500">Categoria</th><th class="text-left px-4 py-2 text-xs font-medium text-gray-500">Preço (Brasil)</th><th class="text-left px-4 py-2 text-xs font-medium text-gray-500">Quando</th></tr></thead>
+                <tbody>
+                    <tr class="border-b border-gray-50"><td class="px-4 py-2 font-medium">Marketing</td><td class="px-4 py-2 text-gray-600">~R$ 0,50/msg</td><td class="px-4 py-2 text-gray-500">Promoções, campanhas</td></tr>
+                    <tr class="border-b border-gray-50"><td class="px-4 py-2 font-medium">Utility</td><td class="px-4 py-2 text-gray-600">~R$ 0,15/msg</td><td class="px-4 py-2 text-gray-500">Pedidos, faturas, rastreamento</td></tr>
+                    <tr class="border-b border-gray-50"><td class="px-4 py-2 font-medium">Authentication</td><td class="px-4 py-2 text-gray-600">~R$ 0,25/msg</td><td class="px-4 py-2 text-gray-500">Códigos OTP, 2FA</td></tr>
+                    <tr><td class="px-4 py-2 font-medium">Service</td><td class="px-4 py-2 text-green-600 font-medium">Grátis</td><td class="px-4 py-2 text-gray-500">Resposta ao cliente (dentro de 24h)</td></tr>
+                </tbody>
+            </table>
+            <div class="mt-3 rounded-lg bg-blue-50 p-3 text-xs text-blue-800">
+                <strong>Nota:</strong> Os preços variam por país. Consulte <a href="https://developers.facebook.com/docs/whatsapp/pricing" target="_blank" class="underline">developers.facebook.com/docs/whatsapp/pricing</a>.
+            </div>
+        </div>
+
+        @* API Endpoints *@
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Endpoints Principais da Cloud API</h2>
+        <div class="rounded-xl border border-gray-200 bg-gray-900 p-5 font-mono text-sm leading-loose text-gray-100 mb-8">
+            <div class="text-gray-500"># Enviar mensagem de texto</div>
+            <div class="text-green-400">POST</div>
+            <div class="text-blue-300">https://graph.facebook.com/v21.0/{PHONE_NUMBER_ID}/messages</div>
+            <div class="mt-1 text-gray-400">@("{")  "messaging_product": "whatsapp", "to": "5511999999999", "type": "text", "text": @("{")"body":"Olá!"@("}") @("}")</div>
+            <br/>
+            <div class="text-gray-500"># Enviar template</div>
+            <div class="text-green-400">POST</div>
+            <div class="text-blue-300">https://graph.facebook.com/v21.0/{PHONE_NUMBER_ID}/messages</div>
+            <div class="mt-1 text-gray-400">@("{")  "type": "template", "template": @("{") "name": "medicao_aprovada", "language": @("{") "code": "pt_BR" @("}") @("}") @("}")</div>
+            <br/>
+            <div class="text-gray-500"># Webhook — receber mensagens (POST no seu servidor)</div>
+            <div class="text-amber-400">POST /webhook/whatsapp</div>
+            <div class="mt-1 text-gray-400">@("{") "entry": [@("{")"changes":[...messages...]@("}")]@("}")</div>
+        </div>
+
+        @* ===== PARTE 2 ===== *@
+        <div class="rounded-lg bg-[#512bd4]/10 p-4 mb-6 mt-12">
+            <h2 class="text-lg font-bold text-[#512bd4]">Parte 2 — Guia para Desenvolvedores CodeCycle</h2>
+            <p class="text-sm text-gray-600">Como adaptar este demo para integrar WhatsApp real no ERP Obraxs.</p>
+        </div>
+
+        @* O que muda *@
+        <h2 class="text-xl font-bold text-gray-900 mb-4">De Demo para Produção — O Que Muda</h2>
+        <div class="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden mb-8">
+            <table class="w-full text-sm">
+                <thead><tr class="border-b border-gray-200 bg-gray-50"><th class="text-left text-xs font-medium text-gray-500 px-4 py-3">Aspecto</th><th class="text-left text-xs font-medium text-gray-500 px-4 py-3">Demo (Atual)</th><th class="text-left text-xs font-medium text-gray-500 px-4 py-3">Produção (Meta API)</th></tr></thead>
+                <tbody>
+                    <tr class="border-b border-gray-50"><td class="px-4 py-2 font-medium">Envio de Mensagem</td><td class="px-4 py-2 text-gray-500">Salva no banco local</td><td class="px-4 py-2">POST para Graph API da Meta</td></tr>
+                    <tr class="border-b border-gray-50"><td class="px-4 py-2 font-medium">Recebimento</td><td class="px-4 py-2 text-gray-500">Simulador com keywords</td><td class="px-4 py-2">Webhook HTTP recebe do WhatsApp</td></tr>
+                    <tr class="border-b border-gray-50"><td class="px-4 py-2 font-medium">Status (✓✓)</td><td class="px-4 py-2 text-gray-500">Task.Delay progressivo</td><td class="px-4 py-2">Webhook message_status</td></tr>
+                    <tr class="border-b border-gray-50"><td class="px-4 py-2 font-medium">Templates</td><td class="px-4 py-2 text-gray-500">Dados estáticos no banco</td><td class="px-4 py-2">Registrados no Meta Business Manager</td></tr>
+                    <tr class="border-b border-gray-50"><td class="px-4 py-2 font-medium">Contatos</td><td class="px-4 py-2 text-gray-500">Seed de 50 contatos</td><td class="px-4 py-2">Sincronização com base de clientes do ERP</td></tr>
+                    <tr class="border-b border-gray-50"><td class="px-4 py-2 font-medium">Autenticação</td><td class="px-4 py-2 text-gray-500">Sem auth</td><td class="px-4 py-2">OAuth 2.0 + JWT + permissões</td></tr>
+                    <tr class="border-b border-gray-50"><td class="px-4 py-2 font-medium">Opt-in</td><td class="px-4 py-2 text-gray-500">Campo no banco</td><td class="px-4 py-2">Fluxo real com audit trail</td></tr>
+                    <tr class="border-b border-gray-50"><td class="px-4 py-2 font-medium">Campanhas</td><td class="px-4 py-2 text-gray-500">Simulação progressiva</td><td class="px-4 py-2">Envio real com rate limiting Meta</td></tr>
+                    <tr><td class="px-4 py-2 font-medium">Multi-tenant</td><td class="px-4 py-2 text-gray-500">Banco único</td><td class="px-4 py-2">Schema por empresa ou WABA por filial</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        @* Etapas de Adaptação *@
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Etapas de Adaptação</h2>
+        <div class="space-y-4 mb-8">
+            @foreach (var fase in _phases)
+            {
+                <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                    <div class="mb-3 flex items-center gap-3">
+                        <span class="rounded-full @fase.Color px-2.5 py-1 text-xs font-bold text-white">@fase.Label</span>
+                        <h3 class="font-semibold text-gray-900">@fase.Title</h3>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-3">@fase.Desc</p>
+                    <ul class="space-y-1.5">
+                        @foreach (var task in fase.Tasks)
+                        {
+                            <li class="flex items-start gap-2 text-sm text-gray-600">
+                                <span class="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-gray-300"></span>
+                                @task
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+
+        @* Templates sugeridos *@
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Templates Sugeridos para o ERP Obraxs</h2>
+        <div class="grid md:grid-cols-2 gap-3 mb-8">
+            @foreach (var tpl in _suggestedTemplates)
+            {
+                <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                    <div class="mb-2 flex items-center gap-2">
+                        <code class="rounded bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">@tpl.Name</code>
+                        <span class="rounded-full px-1.5 py-0.5 text-[10px] font-medium @(tpl.Category == "Marketing" ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700")">@tpl.Category</span>
+                    </div>
+                    <p class="text-xs leading-relaxed text-gray-600">@tpl.Body</p>
+                </div>
+            }
+        </div>
+
+        @* Módulos do ERP *@
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Módulos do ERP com Integração WhatsApp</h2>
+        <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm mb-8">
+            <p class="text-sm text-gray-600 mb-4">Cada módulo do Obraxs pode disparar notificações automáticas via WhatsApp:</p>
+            <div class="grid sm:grid-cols-3 gap-2">
+                @foreach (var mod in _erpModules)
+                {
+                    <div class="flex items-center gap-2 rounded-lg border border-gray-100 bg-gray-50 px-3 py-2 text-sm text-gray-700">
+                        <span class="h-2 w-2 rounded-full bg-whatsapp"></span>@mod
+                    </div>
+                }
+            </div>
+        </div>
+
+        @* Variáveis de ambiente *@
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Variáveis de Ambiente para Produção</h2>
+        <div class="rounded-xl border border-gray-200 bg-gray-900 p-5 font-mono text-sm leading-loose text-gray-100 mb-8">
+            <div class="text-gray-500"># WhatsApp Cloud API</div>
+            <div><span class="text-amber-300">WHATSAPP_TOKEN</span>=EAA...seu_token_permanente</div>
+            <div><span class="text-amber-300">WHATSAPP_PHONE_NUMBER_ID</span>=123456789012345</div>
+            <div><span class="text-amber-300">WHATSAPP_BUSINESS_ACCOUNT_ID</span>=987654321098765</div>
+            <div><span class="text-amber-300">WHATSAPP_WEBHOOK_VERIFY_TOKEN</span>=meu_token_secreto</div>
+            <br/>
+            <div class="text-gray-500"># Banco de dados</div>
+            <div><span class="text-amber-300">DATABASE_URL</span>=postgresql://user:pass@("@")host/db</div>
+            <br/>
+            <div class="text-gray-500"># Fila + Segurança</div>
+            <div><span class="text-amber-300">REDIS_URL</span>=redis://localhost:6379</div>
+            <div><span class="text-amber-300">JWT_SECRET</span>=chave_secreta_forte</div>
+        </div>
+
+        @* Checklist *@
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Checklist de Go-Live</h2>
+        <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm mb-8">
+            <div class="space-y-3">
+                @foreach (var item in _checklist)
+                {
+                    <div class="flex items-center gap-3 text-sm">
+                        <div class="flex h-5 w-5 items-center justify-center rounded border border-gray-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-transparent"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                        </div>
+                        <span class="text-gray-700">@item.Text</span>
+                        <span class="ml-auto rounded-full px-2 py-0.5 text-[10px] font-medium @item.BadgeClass">@item.Category</span>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @* Links *@
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Links Úteis</h2>
+        <div class="grid md:grid-cols-2 gap-3 mb-8">
+            @foreach (var link in _links)
+            {
+                <a href="@link.Url" target="_blank"
+                   class="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 shadow-sm transition-colors hover:border-whatsapp hover:bg-[#25d366]/5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#25d366" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+                    <span class="text-sm font-medium text-gray-700">@link.Title</span>
+                </a>
+            }
+        </div>
+
+        @* Footer *@
+        <div class="text-center text-sm text-gray-400 pb-8 border-t border-gray-200 pt-6">
+            <p>Guia de integração WhatsApp Business API para desenvolvedores CodeCycle.</p>
+            <p class="mt-1">Este demo é uma referência arquitetural — adapte os módulos conforme a necessidade do ERP Obraxs.</p>
+        </div>
+    </div>
+</div>
+
+@code {
+    private record Prerequisite(string Title, string Desc);
+    private record Step(int Number, string Title, string Detail, string? Link = null);
+    private record Phase(string Label, string Title, string Desc, string Color, string[] Tasks);
+    private record SuggestedTemplate(string Name, string Category, string Body);
+    private record ChecklistItem(string Text, string Category, string BadgeClass);
+    private record UsefulLink(string Title, string Url);
+
+    private readonly Prerequisite[] _prerequisites =
+    [
+        new("Meta Business Account", "Conta empresarial no Meta Business Suite (business.facebook.com). É gratuita."),
+        new("Verificação de Negócio", "Verificar a empresa no Meta Business Manager com CNPJ, site e documentos. Necessário para templates e limites de envio."),
+        new("Número de Telefone Dedicado", "Um número que NÃO esteja ativo no WhatsApp comum ou Business App. Pode ser fixo ou celular."),
+        new("Nome de Exibição", "Deve corresponder ao nome da empresa/marca no site. Sem CAPS LOCK (exceto siglas), sem emojis extras."),
+        new("App no Meta Developers", "Criar um app em developers.facebook.com e adicionar o produto 'WhatsApp' para obter as credenciais de API."),
+        new("Servidor com HTTPS (Webhook)", "Endpoint público HTTPS para receber notificações de mensagens recebidas e status de entrega.")
+    ];
+
+    private readonly Step[] _steps =
+    [
+        new(1, "Criar conta no Meta Business Suite", "Acesse business.facebook.com e crie uma conta empresarial. Preencha dados da empresa (CNPJ, endereço, site).", "https://business.facebook.com"),
+        new(2, "Verificar o Negócio", "Em Configurações > Central de Segurança > Verificação de Negócio. Envie documentos. Aprovação leva 1-5 dias úteis."),
+        new(3, "Criar App no Meta for Developers", "Acesse developers.facebook.com > Meus Apps > Criar App > Tipo 'Business'. Adicione o produto 'WhatsApp'.", "https://developers.facebook.com"),
+        new(4, "Configurar número de telefone", "No painel WhatsApp do app, adicione um número de telefone. Verificação por SMS ou ligação."),
+        new(5, "Gerar Token de acesso permanente", "Crie um System User no Business Manager com permissão 'whatsapp_business_messaging'. Gere um token permanente."),
+        new(6, "Configurar Webhook", "Configure uma URL HTTPS para receber eventos. Campos: 'messages' e 'message_status'. Responder ao challenge GET."),
+        new(7, "Criar Templates de mensagem", "No WhatsApp Manager > Message Templates. Aprovação pela Meta em 1-24h. Necessários para iniciar conversas."),
+        new(8, "Testar no Sandbox", "Use o playground no painel do app para testar envio para números autorizados antes de produção.")
+    ];
+
+    private readonly Phase[] _phases =
+    [
+        new("Fase 1", "Criar WhatsApp Gateway Service", "Serviço centralizado que encapsula todas as chamadas à Cloud API da Meta.", "bg-blue-500",
+            ["Configurar env vars: WHATSAPP_TOKEN, PHONE_NUMBER_ID, WEBHOOK_VERIFY_TOKEN",
+             "Implementar POST /messages para Graph API com retry e exponential backoff",
+             "Implementar GET/POST /webhook para verificação e recebimento de mensagens",
+             "Mapear webhook events: message, message_status (sent, delivered, read, failed)",
+             "Implementar fila (Redis/RabbitMQ) para mensagens outbound com rate limiting"]),
+
+        new("Fase 2", "Adaptar Message Service", "Substituir o simulador por chamadas reais. Manter a mesma interface para o frontend.", "bg-green-500",
+            ["Substituir WhatsAppSimulator por chamada ao Gateway Service",
+             "Substituir Task.Delay de status por webhook events reais",
+             "Adicionar campo whatsapp_message_id na tabela Message",
+             "Implementar idempotência no webhook (dedup por wamid)",
+             "Tratar erros da API (rate limit 429, token expirado, número inválido)"]),
+
+        new("Fase 3", "Integrar com Base de Clientes do ERP", "Sincronizar contatos do módulo de clientes do Obraxs com a base do CRM WhatsApp.", "bg-purple-500",
+            ["Criar sync bidirecional: Cliente ERP ↔ Contato WhatsApp CRM",
+             "Normalizar telefones (E.164: +5511999999999)",
+             "Implementar opt-in/opt-out real com audit trail",
+             "Tags automáticas baseadas em dados do ERP (construtora, fornecedor, locadora)",
+             "Webhook de atualização: quando contato muda no ERP, atualiza no CRM"]),
+
+        new("Fase 4", "Template Manager", "Gerenciar templates sincronizados com a API da Meta.", "bg-amber-500",
+            ["CRUD local de templates sincronizado com a API de templates da Meta",
+             "Fluxo de aprovação: rascunho → enviado para Meta → aprovado/rejeitado",
+             "Templates contextuais: medição aprovada, contrato vencendo, boleto gerado, NF emitida",
+             "Variáveis dinâmicas mapeadas para dados do ERP ({{nome_obra}}, {{valor}}, {{vencimento}})",
+             "Preview de template antes do envio com dados reais do contato"]),
+
+        new("Fase 5", "Campanhas com Envio Real", "Adaptar campanhas para envio real respeitando limites da Meta.", "bg-red-500",
+            ["Respeitar tier de envio atual da conta (1k, 10k, 100k, ilimitado)",
+             "Implementar rate limiting adaptativo baseado no tier",
+             "Monitorar quality rating da conta (verde, amarelo, vermelho)",
+             "Pausar campanha automaticamente se quality rating degradar",
+             "Métricas reais de entrega vindas dos webhooks"]),
+
+        new("Fase 6", "Autenticação e Multi-tenant", "Segurança e suporte a múltiplas empresas do grupo.", "bg-indigo-500",
+            ["Autenticação via JWT com roles (admin, atendente, visualizador)",
+             "Cada empresa/filial com seu WABA e Phone Number ID",
+             "Isolamento de dados por tenant (schema-per-tenant ou RLS)",
+             "Audit log: quem enviou, para quem, quando, qual template",
+             "Dashboard administrativo com métricas consolidadas cross-tenant"])
+    ];
+
+    private readonly SuggestedTemplate[] _suggestedTemplates =
+    [
+        new("medicao_aprovada", "Utility", "Olá {{1}}! A medição #{{2}} da obra {{3}} foi aprovada no valor de {{4}}. Fatura disponível no portal."),
+        new("contrato_vencimento", "Utility", "Aviso: O contrato {{1}} da obra {{2}} vence em {{3}} dias. Acesse o sistema para renovar."),
+        new("boleto_gerado", "Utility", "{{1}}, seu boleto de R$ {{2}} vencimento {{3}} referente ao contrato {{4}} está disponível."),
+        new("manutencao_preventiva", "Utility", "Equipamento {{1}} precisa de manutenção preventiva programada para {{2}}. Confirme disponibilidade."),
+        new("novo_lead_boas_vindas", "Marketing", "Olá {{1}}! Obrigado pelo interesse no Obraxs. Sou {{2}} da equipe comercial. Como posso ajudar?"),
+        new("proposta_enviada", "Marketing", "{{1}}, sua proposta personalizada do Obraxs foi enviada por email. Valor: {{2}}/mês. Dúvidas?"),
+        new("nf_emitida", "Utility", "NF {{1}} emitida no valor de R$ {{2}} para o contrato {{3}}. PDF disponível no portal do cliente."),
+        new("compra_aprovada", "Utility", "Solicitação de compra #{{1}} aprovada. Fornecedor: {{2}}. Valor: R$ {{3}}. Pedido será emitido.")
+    ];
+
+    private readonly string[] _erpModules =
+    [
+        "Tesouraria", "Orçamentos", "Medições de Obra", "Conciliação Bancária",
+        "Compras", "Cotações", "Inventário", "Centro de Custos", "Relatórios",
+        "App Mobile", "Contratos", "Manutenção Preventiva", "Diário de Obra",
+        "Locação de Equipamentos", "Gestão de Fornecedores"
+    ];
+
+    private readonly ChecklistItem[] _checklist =
+    [
+        new("Meta Business Account verificado e aprovado", "Meta", "bg-blue-100 text-blue-700"),
+        new("Número de telefone dedicado registrado", "Meta", "bg-blue-100 text-blue-700"),
+        new("Token permanente de System User gerado", "Meta", "bg-blue-100 text-blue-700"),
+        new("Templates de mensagem aprovados", "Meta", "bg-blue-100 text-blue-700"),
+        new("Webhook HTTPS configurado e respondendo", "Infra", "bg-purple-100 text-purple-700"),
+        new("Fila de mensagens (Redis/RabbitMQ) operacional", "Infra", "bg-purple-100 text-purple-700"),
+        new("Rate limiting implementado (respeitar tier)", "Código", "bg-green-100 text-green-700"),
+        new("Retry com exponential backoff implementado", "Código", "bg-green-100 text-green-700"),
+        new("Idempotência no webhook (dedup por wamid)", "Código", "bg-green-100 text-green-700"),
+        new("Normalização de telefones (E.164)", "Código", "bg-green-100 text-green-700"),
+        new("Opt-in collection com audit trail", "Compliance", "bg-red-100 text-red-700"),
+        new("Política de privacidade atualizada", "Compliance", "bg-red-100 text-red-700"),
+        new("LGPD: consentimento explícito registrado", "Compliance", "bg-red-100 text-red-700"),
+        new("Monitoramento: quality rating, delivery rate, error rate", "Ops", "bg-amber-100 text-amber-700"),
+        new("Alertas: token expirado, quality degraded, rate limit", "Ops", "bg-amber-100 text-amber-700"),
+        new("Testes E2E com número sandbox antes de produção", "QA", "bg-gray-100 text-gray-700")
+    ];
+
+    private readonly UsefulLink[] _links =
+    [
+        new("WhatsApp Business Platform", "https://business.whatsapp.com/products/business-platform"),
+        new("Cloud API — Get Started", "https://developers.facebook.com/docs/whatsapp/cloud-api/get-started"),
+        new("Webhook Setup Guide", "https://developers.facebook.com/docs/whatsapp/cloud-api/guides/set-up-webhooks"),
+        new("Message Templates", "https://developers.facebook.com/docs/whatsapp/message-templates"),
+        new("Pricing (por país)", "https://developers.facebook.com/docs/whatsapp/pricing"),
+        new("Rate Limits & Quality", "https://developers.facebook.com/docs/whatsapp/messaging-limits"),
+        new("Postman Collection", "https://www.postman.com/meta/whatsapp-business-platform/collection/wlk6lh4/whatsapp-cloud-api"),
+        new("Meta Developer Hub", "https://business.whatsapp.com/developers/developer-hub")
+    ];
+}

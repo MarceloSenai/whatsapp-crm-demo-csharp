@@ -8,10 +8,10 @@
         {
             var step = i;
             <div class="flex items-center">
-                <div class="@($"w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium {(currentStep >= step ? "bg-[#25d366] text-white" : "bg-gray-200 text-gray-500")}")">@step</div>
+                <div class="@StepIndicatorClass(step)">@step</div>
                 @if (step < 4)
                 {
-                    <div class="@($"w-12 h-0.5 {(currentStep > step ? "bg-[#25d366]" : "bg-gray-200")}")"></div>
+                    <div class="@($"w-12 h-0.5 {(currentStep > step ? "bg-whatsapp" : "bg-gray-200")}")"></div>
                 }
             </div>
         }
@@ -20,19 +20,19 @@
     @* Step 1: Name + Template *@
     @if (currentStep == 1)
     {
-        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
             <h3 class="font-semibold text-gray-900 mb-4">Detalhes da Campanha</h3>
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Nome da Campanha</label>
                     <input type="text" @bind="name" placeholder="Ex: Follow-up Leads Q1"
-                           class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#25d366]" />
+                           class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-whatsapp/30" />
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Mensagem do Template</label>
-                    <textarea @bind="templateText" rows="4" maxlength="1000" placeholder="Olá {{nome}}, ..."
-                              class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#25d366] resize-none"></textarea>
-                    <div class="text-right text-[11px] text-gray-400">@(templateText.Length)/1000</div>
+                    <textarea @bind="templateText" rows="4" maxlength="1000" placeholder="Ola {{nome}}, ..."
+                              class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-whatsapp/30 resize-none"></textarea>
+                    <div class="text-right text-[11px] text-gray-400 mt-1">@(templateText.Length)/1000</div>
                 </div>
             </div>
         </div>
@@ -41,36 +41,45 @@
     @* Step 2: Audience Tags *@
     @if (currentStep == 2)
     {
-        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-            <h3 class="font-semibold text-gray-900 mb-4">Audiência</h3>
-            <p class="text-sm text-gray-500 mb-4">Selecione as tags para filtrar os destinatários:</p>
-            <div class="grid grid-cols-3 gap-2">
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+            <h3 class="font-semibold text-gray-900 mb-2">Audiencia</h3>
+            <p class="text-sm text-gray-500 mb-4">Selecione as tags para filtrar os destinatarios. Nenhuma tag selecionada envia para todos.</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
                 @foreach (var tag in availableTags)
                 {
                     var isSelected = selectedTags.Contains(tag);
                     <button @onclick="() => ToggleTag(tag)"
-                            class="@($"px-3 py-2 text-sm rounded-lg border transition-colors {(isSelected ? "border-[#25d366] bg-green-50 text-green-700" : "border-gray-200 text-gray-600 hover:bg-gray-50")}")">
-                        @if (isSelected) { <span class="mr-1">✓</span> }
+                            class="@($"px-3 py-2.5 text-sm rounded-lg border-2 transition-all {(isSelected ? "border-whatsapp bg-green-50 text-green-700 font-medium" : "border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300")}")">
+                        @if (isSelected)
+                        {
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="inline mr-1"><polyline points="20 6 9 17 4 12"/></svg>
+                        }
                         @tag
                     </button>
                 }
             </div>
+            @if (selectedTags.Count > 0)
+            {
+                <p class="text-xs text-gray-400 mt-3">@selectedTags.Count tag(s) selecionada(s)</p>
+            }
         </div>
     }
 
     @* Step 3: Rate Limit *@
     @if (currentStep == 3)
     {
-        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-            <h3 class="font-semibold text-gray-900 mb-4">Cadência de Envio</h3>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+            <h3 class="font-semibold text-gray-900 mb-4">Cadencia de Envio</h3>
+            <p class="text-sm text-gray-500 mb-6">Controle a velocidade de envio para evitar bloqueios.</p>
             <div class="text-center mb-6">
-                <span class="text-4xl font-bold text-[#25d366]">@rateLimit</span>
+                <span class="text-5xl font-bold text-whatsapp">@rateLimit</span>
                 <span class="text-gray-500 text-sm ml-1">msgs/min</span>
             </div>
-            <input type="range" min="5" max="60" step="5" @bind="rateLimit"
-                   class="w-full accent-[#25d366]" />
-            <div class="flex justify-between text-xs text-gray-400 mt-1">
-                <span>5</span><span>60</span>
+            <input type="range" min="5" max="60" step="5" @bind="rateLimit" @bind:event="oninput"
+                   class="w-full accent-[#25d366] h-2" />
+            <div class="flex justify-between text-xs text-gray-400 mt-2">
+                <span>5 (conservador)</span>
+                <span>60 (agressivo)</span>
             </div>
         </div>
     }
@@ -78,15 +87,26 @@
     @* Step 4: Review *@
     @if (currentStep == 4)
     {
-        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-            <h3 class="font-semibold text-gray-900 mb-4">Revisão</h3>
-            <div class="space-y-3 text-sm">
-                <div><span class="text-gray-500">Nome:</span> <span class="font-medium">@name</span></div>
-                <div><span class="text-gray-500">Tags:</span> <span class="font-medium">@(selectedTags.Count > 0 ? string.Join(", ", selectedTags) : "Todos os contatos")</span></div>
-                <div><span class="text-gray-500">Cadência:</span> <span class="font-medium">@rateLimit msgs/min</span></div>
-                <div>
-                    <span class="text-gray-500">Mensagem:</span>
-                    <p class="mt-1 p-3 bg-gray-50 rounded-lg text-gray-700 text-sm">@templateText</p>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+            <h3 class="font-semibold text-gray-900 mb-4">Revisao</h3>
+            <div class="space-y-4">
+                <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <span class="text-sm text-gray-500 w-24 flex-shrink-0">Nome:</span>
+                    <span class="text-sm font-medium text-gray-900">@name</span>
+                </div>
+                <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <span class="text-sm text-gray-500 w-24 flex-shrink-0">Tags:</span>
+                    <span class="text-sm font-medium text-gray-900">
+                        @(selectedTags.Count > 0 ? string.Join(", ", selectedTags) : "Todos os contatos")
+                    </span>
+                </div>
+                <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <span class="text-sm text-gray-500 w-24 flex-shrink-0">Cadencia:</span>
+                    <span class="text-sm font-medium text-gray-900">@rateLimit msgs/min</span>
+                </div>
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <span class="text-sm text-gray-500">Mensagem:</span>
+                    <p class="mt-2 p-3 bg-white rounded-lg text-sm text-gray-700 border border-gray-200 whitespace-pre-wrap">@templateText</p>
                 </div>
             </div>
         </div>
@@ -95,21 +115,32 @@
     @* Navigation *@
     <div class="flex justify-between mt-6">
         <button @onclick="PrevStep" disabled="@(currentStep == 1)"
-                class="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50">
+                class="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50">
             Voltar
         </button>
         @if (currentStep < 4)
         {
             <button @onclick="NextStep" disabled="@(!CanAdvance)"
-                    class="px-4 py-2 text-sm bg-[#25d366] text-white rounded-lg hover:bg-[#128c7e] transition-colors disabled:opacity-50">
-                Próximo
+                    class="px-4 py-2 text-sm font-medium bg-whatsapp text-white rounded-lg hover:bg-whatsapp-dark transition-colors disabled:opacity-50">
+                Proximo
             </button>
         }
         else
         {
             <button @onclick="Submit" disabled="@submitting"
-                    class="px-4 py-2 text-sm bg-[#25d366] text-white rounded-lg hover:bg-[#128c7e] transition-colors disabled:opacity-50">
-                @(submitting ? "Criando..." : "Criar Campanha")
+                    class="px-4 py-2 text-sm font-medium bg-whatsapp text-white rounded-lg hover:bg-whatsapp-dark transition-colors disabled:opacity-50 flex items-center gap-2">
+                @if (submitting)
+                {
+                    <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                    </svg>
+                    <span>Criando...</span>
+                }
+                else
+                {
+                    <span>Criar Campanha</span>
+                }
             </button>
         }
     </div>
@@ -130,6 +161,11 @@
         1 => !string.IsNullOrWhiteSpace(name) && !string.IsNullOrWhiteSpace(templateText),
         _ => true
     };
+
+    private string StepIndicatorClass(int step) =>
+        currentStep >= step
+            ? "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium bg-whatsapp text-white"
+            : "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium bg-gray-200 text-gray-500";
 
     private void NextStep() { if (currentStep < 4 && CanAdvance) currentStep++; }
     private void PrevStep() { if (currentStep > 1) currentStep--; }
@@ -156,6 +192,7 @@
             await Http.PostAsJsonAsync("/api/campaigns", payload);
             Nav.NavigateTo("/campaigns");
         }
+        catch { /* ignore */ }
         finally
         {
             submitting = false;

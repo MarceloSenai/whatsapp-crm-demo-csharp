@@ -10,15 +10,16 @@ RUN dotnet restore src/WhatsAppCrm.Web/WhatsAppCrm.Web.csproj
 COPY . .
 RUN dotnet publish src/WhatsAppCrm.Web/WhatsAppCrm.Web.csproj -c Release -o /app/publish
 
-# Runtime stage — alpine for minimal footprint
-FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS runtime
+# Runtime stage — standard Debian-based image (most compatible)
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
 
 COPY --from=build /app/publish .
 
-# Render uses PORT env var
+# Memory optimization for Render free tier (512MB)
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV PORT=8080
+ENV DOTNET_gcServer=0
 ENV DOTNET_GCHeapHardLimit=0x10000000
 EXPOSE 8080
 

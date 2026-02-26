@@ -57,15 +57,26 @@ builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 var app = builder.Build();
 
 // Auto-create tables and seed on startup
-using (var scope = app.Services.CreateScope())
+try
 {
+    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    logger.LogInformation("Connecting to database...");
     await db.Database.EnsureCreatedAsync();
+    logger.LogInformation("Database ready.");
 
     if (!await db.Contacts.AnyAsync())
     {
+        logger.LogInformation("Seeding database...");
         await DatabaseSeeder.SeedAsync(db);
+        logger.LogInformation("Database seeded.");
     }
+}
+catch (Exception ex)
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex, "Database initialization failed. App will start without seed data.");
 }
 
 // Configure the HTTP request pipeline
